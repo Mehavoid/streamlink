@@ -3,14 +3,26 @@ $url trovo.live
 $type live, vod
 """
 
+import enum
 import logging
 import re
+
+from strings import ascii_uppercase, digits
 
 from streamlink.plugin import Plugin, pluginmatcher
 from streamlink.plugin.api import useragents, validate
 from streamlink.utils.url import update_qsd
 
+
 log = logging.getLogger(__name__)
+
+
+CHARS = digits + ascii_uppercase
+
+
+class CLI(enum.Enum):
+    innerSite = 4
+    embededPlayer = 11
 
 
 def build_stream_params():
@@ -44,6 +56,8 @@ def update_params(src):
 
 
 class TrovoApolloAPI:
+    CLI_ID = 4
+
     def __init__(self, session):
         self.session = session
         self.session.http.headers.update({
