@@ -7,9 +7,8 @@ import enum
 import logging
 import random
 import re
+import string
 import time
-
-from strings import ascii_uppercase, digits
 
 from streamlink.exceptions import NoStreamsError, PluginError
 from streamlink.plugin import Plugin, pluginmatcher
@@ -20,7 +19,7 @@ from streamlink.utils.url import update_qsd
 log = logging.getLogger(__name__)
 
 
-CHARS = digits + ascii_uppercase
+CHARS = string.digits + string.ascii_uppercase
 VIP_ONLY = 'The quality "{0}" is not available since it requires a subscription.'
 
 
