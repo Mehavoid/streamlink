@@ -11,10 +11,11 @@ import time
 
 from strings import ascii_uppercase, digits
 
+from streamlink.exceptions import NoStreamsError, PluginError
 from streamlink.plugin import Plugin, pluginmatcher
 from streamlink.plugin.api import useragents, validate
+from streamlink.stream.hls import HLSStream
 from streamlink.utils.url import update_qsd
-
 
 log = logging.getLogger(__name__)
 
@@ -206,7 +207,17 @@ class Trovo(Plugin):
         self.appolo_api = TrovoApolloAPI(session=self.session)
 
     def _video(self, id):
-        pass
+        try:
+            data = self.apollo_api.video(id)
+        except (PluginError, TypeError):
+            raise NoStreamsError(self.url)
+
+        self.id, self.author, self.category, self.title, videos = data
+
+        for video in videos:
+            src = video.get('playUrl')
+            quality = video.get('desc')
+            yield quality, HLSStream(self.session, src)
 
     def _channel(self, channel):
         pass
