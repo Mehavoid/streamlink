@@ -21,8 +21,22 @@ def build_url_params():
     pass
 
 
-def build_gql_query():
-    pass
+def build_gql_query(name, sha256hash, **params):
+    return {
+        'operationName': name,
+        'extensions':
+        {
+            'persistedQuery':
+            {
+                'version': 1,
+                'sha256Hash': sha256hash
+            }
+        },
+        'variables':
+        {
+            'params': dict(**params)
+        }
+    }
 
 
 def update_params(src):
