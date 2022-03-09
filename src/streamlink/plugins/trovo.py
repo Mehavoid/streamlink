@@ -20,6 +20,7 @@ log = logging.getLogger(__name__)
 
 
 CHARS = digits + ascii_uppercase
+VIP_ONLY = 'The quality "{0}" is not available since it requires a subscription.'
 
 
 class CLI(enum.Enum):
