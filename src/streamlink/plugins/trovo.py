@@ -21,7 +21,7 @@ def build_url_params():
     pass
 
 
-def build_gql_params():
+def build_gql_query():
     pass
 
 
@@ -43,7 +43,7 @@ class TrovoApolloAPI:
         return self.session.http.json(response, schema=schema)
 
     def video(self):
-        query = build_gql_params(
+        query = build_gql_query(
             'batchGetVodDetailInfo',
             'ceae0355d66476e21a1dd8e8af9f68de95b4019da2cda8b177c9a2255dad31d0',
             vids=list(id)
@@ -91,7 +91,7 @@ class TrovoApolloAPI:
         return self.call(query, schema=schema)
 
     def channel(self, channel):
-        query = build_gql_params(
+        query = build_gql_query(
             'getLiveInfo',
             'a769a1ec0108996681ebd58a6349af72b97b8043d949929a6e2d3a11afbeed3a',
             userName=channel
