@@ -7,6 +7,8 @@ import logging
 import re
 
 from streamlink.plugin import Plugin, pluginmatcher
+from streamlink.plugin.api import validate
+from streamlink.utils.url import update_qsd
 
 log = logging.getLogger(__name__)
 
@@ -23,15 +25,70 @@ def build_gql_params():
     pass
 
 
-class TrovoApolloAPI:
-    def __init__(self):
-        pass
+def update_params(src):
+    return update_qsd(src, build_stream_params())
 
-    def call(self):
-        pass
+
+class TrovoApolloAPI:
+    def __init__(self, session):
+        self.session = session
+
+    def call(self, data, schema):
+        response = self.session.http.post(
+            'https://gql.trovo.live/',
+            json=data,
+            params=build_url_params()
+        )
+
+        return self.session.http.json(response, schema=schema)
 
     def video(self):
-        pass
+        query = build_gql_params(
+            'batchGetVodDetailInfo',
+            'ceae0355d66476e21a1dd8e8af9f68de95b4019da2cda8b177c9a2255dad31d0',
+            vids=list(id)
+        )
+
+        schema = validate.Schema({
+            'data':
+            {
+                'batchGetVodDetailInfo':
+                {
+                    'VodDetailInfos':
+                    {
+                        id:
+                        {
+                            'streamerInfo':
+                            {
+                                'nickName': str
+                            },
+                            'vodInfo':
+                            {
+                                'categoryName': str,
+                                'title': str,
+                                'vid': str,
+                                'playInfos': [validate.all({
+                                    'playUrl': validate.all(validate.url(), validate.transform(update_params)),
+                                    'bitrate': int,
+                                    'desc': str
+                                })]
+                            }
+                        }
+                    }
+                }
+            }
+        },
+            validate.get(('data', 'batchGetVodDetailInfo', 'VodDetailInfos', id)),
+            validate.union_get(
+                ('vodInfo', 'vid'),
+                ('streamerInfo', 'nickName'),
+                ('streamerInfo', 'nickName'),
+                ('vodInfo', 'categoryName'),
+                ('vodInfo', 'title'),
+                ('vodInfo', 'playInfos'))
+        )
+
+        return self.call(query, schema=schema)
 
     def channel(self):
         pass
