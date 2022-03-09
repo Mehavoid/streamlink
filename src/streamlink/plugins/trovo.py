@@ -11,6 +11,32 @@ from streamlink.plugin import Plugin, pluginmatcher
 log = logging.getLogger(__name__)
 
 
+def build_stream_params():
+    pass
+
+
+def build_url_params():
+    pass
+
+
+def build_gql_params():
+    pass
+
+
+class TrovoApolloAPI:
+    def __init__(self):
+        pass
+
+    def call(self):
+        pass
+
+    def video(self):
+        pass
+
+    def channel(self):
+        pass
+
+
 @pluginmatcher(re.compile(r"""
     https?://trovo\.live/
     (?:
@@ -20,7 +46,16 @@ log = logging.getLogger(__name__)
     )
 """, re.VERBOSE))
 class Trovo(Plugin):
-    def __init(self, url):
+    def __init__(self, url):
+        pass
+
+    def _video(self):
+        pass
+
+    def _channel(self):
+        pass
+
+    def _get_streams(self):
         pass
 
 
