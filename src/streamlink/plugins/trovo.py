@@ -5,7 +5,9 @@ $type live, vod
 
 import enum
 import logging
+import random
 import re
+import time
 
 from strings import ascii_uppercase, digits
 
@@ -29,8 +31,26 @@ def build_stream_params():
     pass
 
 
-def build_url_params():
-    pass
+def build_url_params(cli_id):
+    now = int(time.time())
+    tid = f'{now}{int(9e3 * random.random() + 1e3)}'
+    qid = ''.join(random.choice(CHARS) for _ in range(10))
+    return {
+        'chunk': 1,
+        'resolution': '826*1536',
+        'locale': 'en-US',
+        'cli': cli_id,
+        'from': '/',
+        'reqms': now,
+        'qid': qid,
+        'client_info':
+        {
+            'device_info':
+            {
+                'tid': tid
+            }
+        }
+    }
 
 
 def build_gql_query(name, sha256hash, **params):
@@ -70,7 +90,7 @@ class TrovoApolloAPI:
         response = self.session.http.post(
             'https://gql.trovo.live/',
             json=data,
-            params=build_url_params()
+            params=build_url_params(self.CLI_ID)
         )
 
         return self.session.http.json(response, schema=schema)
