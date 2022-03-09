@@ -90,8 +90,49 @@ class TrovoApolloAPI:
 
         return self.call(query, schema=schema)
 
-    def channel(self):
-        pass
+    def channel(self, channel):
+        query = build_gql_params(
+            'getLiveInfo',
+            'a769a1ec0108996681ebd58a6349af72b97b8043d949929a6e2d3a11afbeed3a',
+            userName=channel
+        )
+
+        schema = validate.Schema({
+            'data':
+            {
+                'getLiveInfo': validate.all({
+                    'categoryInfo':
+                    {
+                        'name': str
+                    },
+                    'streamerInfo':
+                    {
+                        'userName': str
+                    },
+                    'programInfo':
+                    {
+                        'id': str,
+                        'title': str,
+                        'streamInfo': [{
+                            'playUrl': validate.all(str, validate.transform(update_params)),
+                            'vipOnly': validate.transform(bool),
+                            'desc': str,
+                            'bitrate': int
+                        }],
+                    }
+                })
+            }
+        },
+            validate.get(('data', 'getLiveInfo')),
+            validate.union_get(
+                ('programInfo', 'id'),
+                ('streamerInfo', 'userName'),
+                ('categoryInfo', 'name'),
+                ('programInfo', 'title'),
+                ('programInfo', 'streamInfo'))
+        )
+
+        return self.call(query, schema=schema)
 
 
 @pluginmatcher(re.compile(r"""
