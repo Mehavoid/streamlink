@@ -7,7 +7,7 @@ import logging
 import re
 
 from streamlink.plugin import Plugin, pluginmatcher
-from streamlink.plugin.api import validate
+from streamlink.plugin.api import useragents, validate
 from streamlink.utils.url import update_qsd
 
 log = logging.getLogger(__name__)
@@ -46,6 +46,11 @@ def update_params(src):
 class TrovoApolloAPI:
     def __init__(self, session):
         self.session = session
+        self.session.http.headers.update({
+            'Origin': 'https://trovo.live',
+            'Referer': 'https://trovo.live/',
+            'User-Agent': useragents.CHROME
+        })
 
     def call(self, data, schema):
         response = self.session.http.post(
