@@ -47,16 +47,22 @@ class TrovoApolloAPI:
 """, re.VERBOSE))
 class Trovo(Plugin):
     def __init__(self, url):
+        super().__init__(url)
+        match = self.match.groupdict()
+        self.kind = ((str(k), str(v)) for k, v in match.items() if v is not None)
+
+        self.appolo_api = TrovoApolloAPI(session=self.session)
+
+    def _video(self, id):
         pass
 
-    def _video(self):
-        pass
-
-    def _channel(self):
+    def _channel(self, channel):
         pass
 
     def _get_streams(self):
-        pass
+        key, value = next(self.kind)
+        method = getattr(self, f'_{key}')
+        return method(value)
 
 
 __plugin__ = Trovo
