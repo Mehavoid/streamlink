@@ -14,6 +14,7 @@ from streamlink.exceptions import NoStreamsError, PluginError
 from streamlink.plugin import Plugin, pluginmatcher
 from streamlink.plugin.api import useragents, validate
 from streamlink.stream.hls import HLSStream
+from streamlink.stream.http import HTTPStream
 from streamlink.utils.url import update_qsd
 
 log = logging.getLogger(__name__)
@@ -219,7 +220,21 @@ class Trovo(Plugin):
             yield quality, HLSStream(self.session, src)
 
     def _channel(self, channel):
-        pass
+        try:
+            data = self.apollo_api.channel(channel)
+        except (PluginError, TypeError):
+            raise NoStreamsError(self.url)
+
+        self.id, self.author, self.category, self.title, streams = data
+
+        for stream in streams:
+            src = stream.get('playUrl')
+            isVIP = stream.get('vipOnly')
+            quality = stream.get('desc')
+            if isVIP:
+                log.warning(VIP_ONLY.format(quality))
+                continue
+            yield quality, HTTPStream(self.session, src)
 
     def _get_streams(self):
         key, value = next(self.kind)
