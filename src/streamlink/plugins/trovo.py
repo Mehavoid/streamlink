@@ -97,7 +97,7 @@ class TrovoApolloAPI:
 
         return self.session.http.json(response, schema=schema)
 
-    def video(self):
+    def video(self, id):
         query = build_gql_query(
             'batchGetVodDetailInfo',
             'ceae0355d66476e21a1dd8e8af9f68de95b4019da2cda8b177c9a2255dad31d0',
