@@ -202,7 +202,7 @@ class Trovo(Plugin):
     def __init__(self, url):
         super().__init__(url)
         match = self.match.groupdict()
-        self.kind = ((str(k), str(v)) for k, v in match.items() if v is not None)
+        self.kind = next(((str(k), str(v)) for k, v in match.items() if v is not None))
 
         self.appolo_api = TrovoApolloAPI(session=self.session)
 
@@ -237,7 +237,7 @@ class Trovo(Plugin):
             yield quality, HTTPStream(self.session, src)
 
     def _get_streams(self):
-        key, value = next(self.kind)
+        key, value = self.kind
         method = getattr(self, f'_{key}')
         return method(value)
 
