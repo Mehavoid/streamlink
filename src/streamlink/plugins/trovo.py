@@ -204,7 +204,7 @@ class Trovo(Plugin):
         match = self.match.groupdict()
         self.kind = next(((str(k), str(v)) for k, v in match.items() if v is not None))
 
-        self.appolo_api = TrovoApolloAPI(session=self.session)
+        self.apollo_api = TrovoApolloAPI(session=self.session)
 
     def _video(self, id):
         try:
