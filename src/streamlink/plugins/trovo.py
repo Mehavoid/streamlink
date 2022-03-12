@@ -101,7 +101,7 @@ class TrovoApolloAPI:
         query = build_gql_query(
             'batchGetVodDetailInfo',
             'ceae0355d66476e21a1dd8e8af9f68de95b4019da2cda8b177c9a2255dad31d0',
-            vids=list(id)
+            vids=[id]
         )
 
         schema = validate.Schema({
