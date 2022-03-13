@@ -21,7 +21,13 @@ log = logging.getLogger(__name__)
 
 
 CHARS = string.digits + string.ascii_uppercase
-VIP_ONLY = 'The quality "{0}" is not available since it requires a subscription.'
+SUBS_ONLY = 'The {0} {1!r} is not available since it requires a subscription.'
+
+
+class NoSubscriptionError(PluginError):
+    def __init__(self, *args):
+        error = SUBS_ONLY.format(*args)
+        PluginError.__init__(self, error)
 
 
 class CLI(enum.Enum):
@@ -126,7 +132,11 @@ class TrovoApolloAPI:
                                     'playUrl': validate.all(validate.url(), validate.transform(update_params)),
                                     'bitrate': int,
                                     'desc': str
-                                })]
+                                })],
+                                'playbackRights':
+                                {
+                                    'playbackRightsSetting': str
+                                },
                             }
                         }
                     }
@@ -137,9 +147,9 @@ class TrovoApolloAPI:
             validate.union_get(
                 ('vodInfo', 'vid'),
                 ('streamerInfo', 'nickName'),
-                ('streamerInfo', 'nickName'),
                 ('vodInfo', 'categoryName'),
                 ('vodInfo', 'title'),
+                ('vodInfo', 'playbackRights', 'playbackRightsSetting'),
                 ('vodInfo', 'playInfos'))
         )
 
@@ -212,7 +222,11 @@ class Trovo(Plugin):
         except (PluginError, TypeError):
             raise NoStreamsError(self.url)
 
-        self.id, self.author, self.category, self.title, videos = data
+        self.id, self.author, self.category, \
+            self.title, rights, videos = data
+
+        if 'SubscriberOnly' in rights:
+            raise NoSubscriptionError('vod', self.id)
 
         for video in videos:
             src = video.get('playUrl')
@@ -225,14 +239,15 @@ class Trovo(Plugin):
         except (PluginError, TypeError):
             raise NoStreamsError(self.url)
 
-        self.id, self.author, self.category, self.title, streams = data
+        self.id, self.author, self.category, \
+            self.title, streams = data
 
         for stream in streams:
             src = stream.get('playUrl')
             isVIP = stream.get('vipOnly')
             quality = stream.get('desc')
             if isVIP:
-                log.warning(VIP_ONLY.format(quality))
+                log.warning(SUBS_ONLY.format('quality', quality))
                 continue
             yield quality, HTTPStream(self.session, src)
 
