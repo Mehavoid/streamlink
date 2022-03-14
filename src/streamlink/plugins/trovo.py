@@ -173,6 +173,7 @@ class TrovoApolloAPI:
             {
                 'getLiveInfo':
                 {
+                    'isLive': int,
                     'categoryInfo':
                     {
                         'name': str
@@ -196,7 +197,7 @@ class TrovoApolloAPI:
                             'vipOnly': validate.transform(bool),
                             'desc': str,
                             'bitrate': int
-                        }],
+                        }]
                     }
                 }
             }
@@ -207,6 +208,7 @@ class TrovoApolloAPI:
                 ('streamerInfo', 'userName'),
                 ('categoryInfo', 'name'),
                 ('programInfo', 'title'),
+                'isLive',
                 ('programInfo', 'streamInfo'))
         )
 
@@ -253,7 +255,10 @@ class Trovo(Plugin):
             raise NoStreamsError(self.url)
 
         self.id, self.author, self.category, \
-            self.title, streams = data
+            self.title, online, streams = data
+
+        if online == 0:
+            raise PluginError('This stream is currently offline.')
 
         for stream in streams:
             src = stream.get('playUrl')
