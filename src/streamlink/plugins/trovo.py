@@ -110,7 +110,7 @@ class TrovoApolloAPI:
             vids=[id]
         )
 
-        schema = validate.Schema({
+        schema = validate.Schema(validate.all({
             'data':
             {
                 'batchGetVodDetailInfo':
@@ -128,11 +128,17 @@ class TrovoApolloAPI:
                                 'categoryName': str,
                                 'title': str,
                                 'vid': str,
-                                'playInfos': [validate.all({
-                                    'playUrl': validate.all(validate.url(), validate.transform(update_params)),
+                                'playInfos': [{
+                                    'playUrl': validate.any(
+                                        '',
+                                        validate.all(
+                                            validate.url(),
+                                            validate.transform(update_params)
+                                        )
+                                    ),
                                     'bitrate': int,
                                     'desc': str
-                                })],
+                                }],
                                 'playbackRights':
                                 {
                                     'playbackRightsSetting': str
@@ -142,7 +148,7 @@ class TrovoApolloAPI:
                     }
                 }
             }
-        },
+        }),
             validate.get(('data', 'batchGetVodDetailInfo', 'VodDetailInfos', id)),
             validate.union_get(
                 ('vodInfo', 'vid'),
@@ -162,10 +168,11 @@ class TrovoApolloAPI:
             userName=channel
         )
 
-        schema = validate.Schema({
+        schema = validate.Schema(validate.all({
             'data':
             {
-                'getLiveInfo': validate.all({
+                'getLiveInfo':
+                {
                     'categoryInfo':
                     {
                         'name': str
@@ -179,15 +186,21 @@ class TrovoApolloAPI:
                         'id': str,
                         'title': str,
                         'streamInfo': [{
-                            'playUrl': validate.all(str, validate.transform(update_params)),
+                            'playUrl': validate.any(
+                                '',
+                                validate.all(
+                                    validate.url(),
+                                    validate.transform(update_params)
+                                )
+                            ),
                             'vipOnly': validate.transform(bool),
                             'desc': str,
                             'bitrate': int
                         }],
                     }
-                })
+                }
             }
-        },
+        }),
             validate.get(('data', 'getLiveInfo')),
             validate.union_get(
                 ('programInfo', 'id'),
