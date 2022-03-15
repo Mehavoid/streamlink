@@ -79,7 +79,7 @@ def build_gql_query(name, sha256hash, **params):
     }
 
 
-def update_params(src):
+def update_play_url(src):
     return update_qsd(src, build_stream_params())
 
 
@@ -133,7 +133,7 @@ class TrovoApolloAPI:
                                         '',
                                         validate.all(
                                             validate.url(),
-                                            validate.transform(update_params)
+                                            validate.transform(update_play_url)
                                         )
                                     ),
                                     'bitrate': int,
@@ -191,7 +191,7 @@ class TrovoApolloAPI:
                                 '',
                                 validate.all(
                                     validate.url(),
-                                    validate.transform(update_params)
+                                    validate.transform(update_play_url)
                                 )
                             ),
                             'vipOnly': validate.transform(bool),
