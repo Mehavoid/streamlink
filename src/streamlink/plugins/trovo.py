@@ -34,12 +34,16 @@ class CLI(enum.Enum):
     embededPlayer = 11
 
 
+def now_milliseconds():
+    return int(time.time() * 1000)
+
+
 def build_stream_params():
     pass
 
 
 def build_url_params(cli_id):
-    now = int(time.time())
+    now = now_milliseconds()
     tid = f'{now}{int(9e3 * random.random() + 1e3)}'
     qid = ''.join(random.choice(CHARS) for _ in range(10))
     return {
