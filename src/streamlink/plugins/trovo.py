@@ -19,6 +19,8 @@ from streamlink.utils.url import update_qsd
 log = logging.getLogger(__name__)
 
 
+MAX_INT32 = 2147483647
+YYMMDDH_PATTERN = '%y%m%d%H'
 CHARS = string.digits + string.ascii_uppercase
 SUBS_ONLY = 'The {0} {1!r} is not available since it requires a subscription.'
 
@@ -39,7 +41,17 @@ def now_milliseconds():
 
 
 def build_stream_params():
-    pass
+    now = now_milliseconds()
+    str_date = time.strftime(YYMMDDH_PATTERN)
+    step1 = round(MAX_INT32 * (random.random() or .5))
+    step2 = int(step1 * now % 1e10)
+    pvid = f'{step2}{str_date}'
+    scene = CLI(TrovoApolloAPI.CLI_ID).name
+    return {
+        '_f_': now,
+        'pvid': pvid,
+        'playScene': scene
+    }
 
 
 def build_url_params(cli_id):
