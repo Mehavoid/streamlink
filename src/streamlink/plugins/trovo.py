@@ -14,7 +14,6 @@ from streamlink.exceptions import NoStreamsError, PluginError
 from streamlink.plugin import Plugin, pluginmatcher
 from streamlink.plugin.api import useragents, validate
 from streamlink.stream.hls import HLSStream
-from streamlink.stream.http import HTTPStream
 from streamlink.utils.url import update_qsd
 
 log = logging.getLogger(__name__)
@@ -190,8 +189,14 @@ class TrovoApolloAPI:
                             'playUrl': validate.any(
                                 '',
                                 validate.all(
-                                    validate.url(),
-                                    validate.transform(update_play_url)
+                                    validate.transform(update_play_url),
+                                    validate.transform(
+                                        lambda src: src.replace('.flv', '.m3u8')
+                                    ),
+                                    validate.url(
+                                        scheme='http',
+                                        path=validate.endswith('.m3u8')
+                                    ),
                                 )
                             ),
                             'vipOnly': validate.transform(bool),
@@ -267,7 +272,7 @@ class Trovo(Plugin):
             if isVIP:
                 log.warning(SUBS_ONLY.format('quality', quality))
                 continue
-            yield quality, HTTPStream(self.session, src)
+            yield quality, HLSStream(self.session, src)
 
     def _get_streams(self):
         key, value = self.kind
