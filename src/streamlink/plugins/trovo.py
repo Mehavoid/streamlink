@@ -40,28 +40,6 @@ def now_milliseconds():
     return int(time.time() * 1000)
 
 
-def build_url_params(cli_id):
-    now = now_milliseconds()
-    tid = f'{now}{int(9e3 * random.random() + 1e3)}'
-    qid = ''.join(random.choice(CHARS) for _ in range(10))
-    return {
-        'chunk': 1,
-        'resolution': '826*1536',
-        'locale': 'en-US',
-        'cli': cli_id,
-        'from': '/',
-        'reqms': now,
-        'qid': qid,
-        'client_info':
-        {
-            'device_info':
-            {
-                'tid': tid
-            }
-        }
-    }
-
-
 class TrovoApolloAPI:
     CLI_ID = 4
     HOST = 'trovo.live'
@@ -103,11 +81,31 @@ class TrovoApolloAPI:
             'playScene': scene
         }
 
+    @staticmethod
+    def build_url_params(cli_id):
+        now = now_milliseconds()
+        tid = f'{now}{int(9e3 * random.random() + 1e3)}'
+        qid = ''.join(random.choice(CHARS) for _ in range(10))
+        return {
+            'chunk': 1,
+            'resolution': '826*1536',
+            'locale': 'en-US',
+            'cli': cli_id,
+            'from': '/',
+            'reqms': now,
+            'qid': qid,
+            'client_info': {
+                'device_info': {
+                    'tid': tid
+                }
+            }
+        }
+
     def call(self, data, schema):
         response = self.client.post(
             f'https://gql.{self.HOST}/',
             json=data,
-            params=build_url_params(self.CLI_ID)
+            params=self.build_url_params(self.CLI_ID)
         )
 
         return self.client.json(response, schema=schema)
