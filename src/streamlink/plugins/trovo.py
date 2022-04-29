@@ -76,24 +76,6 @@ def build_url_params(cli_id):
     }
 
 
-def build_gql_query(name, sha256hash, **params):
-    return {
-        'operationName': name,
-        'extensions':
-        {
-            'persistedQuery':
-            {
-                'version': 1,
-                'sha256Hash': sha256hash
-            }
-        },
-        'variables':
-        {
-            'params': dict(**params)
-        }
-    }
-
-
 def update_play_url(src):
     return update_qsd(src, build_stream_params())
 
@@ -110,6 +92,22 @@ class TrovoApolloAPI:
             'User-Agent': useragents.CHROME
         })
 
+    @staticmethod
+    def build_gql_query(name, sha256hash, **params):
+        return {
+            'operationName': name,
+            'extensions': {
+                'persistedQuery': {
+                    'version': 1,
+                    'sha256Hash': sha256hash
+                }
+            },
+            'variables': {
+                'params': dict(**params)
+            }
+        }
+
+
     def call(self, data, schema):
         response = self.client.post(
             f'https://gql.{self.HOST}/',
@@ -120,7 +118,7 @@ class TrovoApolloAPI:
         return self.client.json(response, schema=schema)
 
     def video(self, id):
-        query = build_gql_query(
+        query = self.build_gql_query(
             'batchGetVodDetailInfo',
             'ceae0355d66476e21a1dd8e8af9f68de95b4019da2cda8b177c9a2255dad31d0',
             vids=[id]
@@ -178,7 +176,7 @@ class TrovoApolloAPI:
         return self.call(query, schema=schema)
 
     def channel(self, channel):
-        query = build_gql_query(
+        query = self.build_gql_query(
             'getLiveInfo',
             'a769a1ec0108996681ebd58a6349af72b97b8043d949929a6e2d3a11afbeed3a',
             userName=channel
