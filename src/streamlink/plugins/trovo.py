@@ -40,20 +40,6 @@ def now_milliseconds():
     return int(time.time() * 1000)
 
 
-def build_stream_params():
-    now = now_milliseconds()
-    str_date = time.strftime(YYMMDDH_PATTERN)
-    step1 = round(MAX_INT32 * (random.random() or .5))
-    step2 = int(step1 * now % 1e10)
-    pvid = f'{step2}{str_date}'
-    scene = CLI(TrovoApolloAPI.CLI_ID).name
-    return {
-        '_f_': now,
-        'pvid': pvid,
-        'playScene': scene
-    }
-
-
 def build_url_params(cli_id):
     now = now_milliseconds()
     tid = f'{now}{int(9e3 * random.random() + 1e3)}'
@@ -74,10 +60,6 @@ def build_url_params(cli_id):
             }
         }
     }
-
-
-def update_play_url(src):
-    return update_qsd(src, build_stream_params())
 
 
 class TrovoApolloAPI:
@@ -107,6 +89,19 @@ class TrovoApolloAPI:
             }
         }
 
+    @staticmethod
+    def build_stream_params():
+        now = now_milliseconds()
+        str_date = time.strftime(YYMMDDH_PATTERN)
+        step1 = round(MAX_INT32 * (random.random() or .5))
+        step2 = int(step1 * now % 1e10)
+        pvid = f'{step2}{str_date}'
+        scene = CLI(TrovoApolloAPI.CLI_ID).name
+        return {
+            '_f_': now,
+            'pvid': pvid,
+            'playScene': scene
+        }
 
     def call(self, data, schema):
         response = self.client.post(
@@ -147,7 +142,9 @@ class TrovoApolloAPI:
                                         '',
                                         validate.all(
                                             validate.url(),
-                                            validate.transform(update_play_url)
+                                            validate.transform(
+                                                lambda src: update_qsd(src, self.build_stream_params())
+                                            )
                                         )
                                     ),
                                     'bitrate': int,
@@ -204,7 +201,9 @@ class TrovoApolloAPI:
                             'playUrl': validate.any(
                                 '',
                                 validate.all(
-                                    validate.transform(update_play_url),
+                                    validate.transform(
+                                        lambda src: update_qsd(src, self.build_stream_params())
+                                    ),
                                     validate.transform(
                                         lambda src: src.replace('.flv', '.m3u8')
                                     ),
