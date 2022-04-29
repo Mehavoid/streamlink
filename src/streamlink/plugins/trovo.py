@@ -243,8 +243,8 @@ class TrovoApolloAPI:
 class Trovo(Plugin):
     def __init__(self, url):
         super().__init__(url)
-        match = self.match.groupdict()
-        self.kind = next(((str(k), str(v)) for k, v in match.items() if v is not None))
+        groupdict = self.match.groupdict()
+        self.kind = next(((str(k), str(v)) for k, v in groupdict.items() if v is not None))
 
         self.apollo_api = TrovoApolloAPI(client=self.session.http)
 
