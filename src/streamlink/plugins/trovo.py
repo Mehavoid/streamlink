@@ -84,7 +84,7 @@ class TrovoApolloAPI:
     @staticmethod
     def build_url_params(cli_id):
         now = now_milliseconds()
-        tid = f'{now}{int(9e3 * random.random() + 1e3)}'
+        tid = f'{now}{random.randint(1000, 9999)}'
         qid = ''.join(random.choice(CHARS) for _ in range(10))
         return {
             'chunk': 1,
