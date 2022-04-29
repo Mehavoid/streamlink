@@ -101,22 +101,22 @@ def update_play_url(src):
 class TrovoApolloAPI:
     CLI_ID = 4
 
-    def __init__(self, session):
-        self.session = session
-        self.session.http.headers.update({
+    def __init__(self, client):
+        self.client = client
+        self.client.headers.update({
             'Origin': 'https://trovo.live',
             'Referer': 'https://trovo.live/',
             'User-Agent': useragents.CHROME
         })
 
     def call(self, data, schema):
-        response = self.session.http.post(
+        response = self.client.post(
             'https://gql.trovo.live/',
             json=data,
             params=build_url_params(self.CLI_ID)
         )
 
-        return self.session.http.json(response, schema=schema)
+        return self.client.json(response, schema=schema)
 
     def video(self, id):
         query = build_gql_query(
@@ -250,7 +250,7 @@ class Trovo(Plugin):
         match = self.match.groupdict()
         self.kind = next(((str(k), str(v)) for k, v in match.items() if v is not None))
 
-        self.apollo_api = TrovoApolloAPI(session=self.session)
+        self.apollo_api = TrovoApolloAPI(client=self.session.http)
 
     def _video(self, id):
         try:
