@@ -100,18 +100,19 @@ def update_play_url(src):
 
 class TrovoApolloAPI:
     CLI_ID = 4
+    HOST = 'trovo.live'
 
     def __init__(self, client):
         self.client = client
         self.client.headers.update({
-            'Origin': 'https://trovo.live',
-            'Referer': 'https://trovo.live/',
+            'Origin': f'https://{self.HOST}',
+            'Referer': f'https://{self.HOST}/',
             'User-Agent': useragents.CHROME
         })
 
     def call(self, data, schema):
         response = self.client.post(
-            'https://gql.trovo.live/',
+            f'https://gql.{self.HOST}/',
             json=data,
             params=build_url_params(self.CLI_ID)
         )
