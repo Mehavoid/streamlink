@@ -235,7 +235,7 @@ class TrovoApolloAPI:
 @pluginmatcher(re.compile(r"""
     https?://trovo\.live/
     (?:
-        (?:clip|video)/(?P<video>[-_ltvc0-9]+)
+        (?:clip|video)/(?P<video>[^/?&]+)
         |
         (?P<channel>[^/?]+)
     )
