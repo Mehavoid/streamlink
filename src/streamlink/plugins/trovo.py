@@ -31,6 +31,15 @@ class NoSubscriptionError(PluginError):
         PluginError.__init__(self, error)
 
 
+class TrovoCLI(enum.Enum):
+    app = 1
+    ios = 2
+    ipad = 3
+    browser = 4
+    mobile = 5
+    embed = 11
+
+
 class Scene(enum.Enum):
     innerSite = 4
     embededPlayer = 11
@@ -41,7 +50,7 @@ def now_milliseconds():
 
 
 class TrovoApolloAPI:
-    CLI_ID = 4
+    CLI = 'browser'
     HOST = 'trovo.live'
 
     def __init__(self, client):
@@ -51,6 +60,8 @@ class TrovoApolloAPI:
             'Referer': f'https://{self.HOST}/',
             'User-Agent': useragents.CHROME
         })
+        self.cli_id = TrovoCLI[self.CLI].value
+        self.scene = Scene(self.cli_id).name
 
     @staticmethod
     def build_gql_query(name, sha256hash, **params):
@@ -68,13 +79,12 @@ class TrovoApolloAPI:
         }
 
     @staticmethod
-    def build_stream_params():
+    def build_stream_params(scene):
         now = now_milliseconds()
         str_date = time.strftime(YYMMDDH_PATTERN)
         step1 = round(MAX_INT32 * (random.random() or .5))
         step2 = int(step1 * now % 1e10)
         pvid = f'{step2}{str_date}'
-        scene = Scene(TrovoApolloAPI.CLI_ID).name
         return {
             '_f_': now,
             'pvid': pvid,
@@ -105,7 +115,7 @@ class TrovoApolloAPI:
         response = self.client.post(
             f'https://gql.{self.HOST}/',
             json=data,
-            params=self.build_url_params(self.CLI_ID)
+            params=self.build_url_params(self.cli_id)
         )
 
         return self.client.json(response, schema=schema)
@@ -141,7 +151,7 @@ class TrovoApolloAPI:
                                         validate.all(
                                             validate.url(),
                                             validate.transform(
-                                                lambda src: update_qsd(src, self.build_stream_params())
+                                                lambda src: update_qsd(src, self.build_stream_params(self.scene))
                                             )
                                         )
                                     ),
@@ -200,7 +210,7 @@ class TrovoApolloAPI:
                                 '',
                                 validate.all(
                                     validate.transform(
-                                        lambda src: update_qsd(src, self.build_stream_params())
+                                        lambda src: update_qsd(src, self.build_stream_params(self.scene))
                                     ),
                                     validate.transform(
                                         lambda src: src.replace('.flv', '.m3u8')
