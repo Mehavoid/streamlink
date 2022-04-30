@@ -40,7 +40,7 @@ class TrovoCLI(enum.Enum):
     embed = 11
 
 
-class Scene(enum.Enum):
+class TrovoScene(enum.Enum):
     innerSite = 4
     embededPlayer = 11
 
@@ -61,7 +61,7 @@ class TrovoApolloAPI:
             'User-Agent': useragents.CHROME
         })
         self.cli_id = TrovoCLI[self.CLI].value
-        self.scene = Scene(self.cli_id).name
+        self.scene = TrovoScene(self.cli_id).name
 
     @staticmethod
     def build_gql_query(name, sha256hash, **params):
