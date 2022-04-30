@@ -31,7 +31,7 @@ class NoSubscriptionError(PluginError):
         PluginError.__init__(self, error)
 
 
-class CLI(enum.Enum):
+class Scene(enum.Enum):
     innerSite = 4
     embededPlayer = 11
 
@@ -74,7 +74,7 @@ class TrovoApolloAPI:
         step1 = round(MAX_INT32 * (random.random() or .5))
         step2 = int(step1 * now % 1e10)
         pvid = f'{step2}{str_date}'
-        scene = CLI(TrovoApolloAPI.CLI_ID).name
+        scene = Scene(TrovoApolloAPI.CLI_ID).name
         return {
             '_f_': now,
             'pvid': pvid,
