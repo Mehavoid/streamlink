@@ -6,21 +6,20 @@ class TestPluginCanHandleUrlTrovo(PluginCanHandleUrl):
     __plugin__ = Trovo
 
     should_match_groups = [
-        ('https://trovo.live/Maddyson',
+        ('https://trovo.live/s/Maddyson/215661616',
             {'channel': 'Maddyson'}),
-        ('https://trovo.live/Maddyson?adtag=user.EXAMPLE.clip',
+        ('https://trovo.live/s/Maddyson/215661616?adtag=user.EXAMPLE.clip',
             {'channel': 'Maddyson'}),
-        ('https://trovo.live/clip/lc-387743296843423010',
-            {'video': 'lc-387743296843423010'}),
-        ('https://trovo.live/clip/lc-387702296843423010?ltab=videos',
-            {'video': 'lc-387702296843423010'}),
-        ('https://trovo.live/video/ltv-108024053_108024053_387702296935586449',
-            {'video': 'ltv-108024053_108024053_387702296935586449'}),
-        ('https://trovo.live/video/ltv-108024053_108024053_387702296935586449?ltab=videos&adtag=user.EXAMPLE.clip',
-            {'video': 'ltv-108024053_108024053_387702296935586449'}),
+        ('https://trovo.live/s/ChilledCatRadio/549755919717?vid=lc-387702300526225353&adtag=user.BAN.clip',
+            {'channel': 'ChilledCatRadio', 'video': 'lc-387702300526225353'}),
+        ('https://trovo.live/s/ChilledCatRadio/549755919717?vid=ltv-100025538_100025538_387702302348073784&adtag=user.BAN.clip',
+            {'channel': 'ChilledCatRadio', 'video': 'ltv-100025538_100025538_387702302348073784'}),
     ]
 
     should_not_match = [
-        'https://trovo.live'
-        'https://trovo.live/'
+        'https://trovo.live',
+        'https://trovo.live/',
+        'https://trovo.live/Maddyson',
+        'https://trovo.live/clip/lc-387743296843423010',
+        'https://trovo.live/video/ltv-108024053_108024053_387702296935586449?ltab=videos&adtag=user.EXAMPLE.clip',
     ]

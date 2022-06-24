@@ -243,18 +243,18 @@ class TrovoApolloAPI:
 
 
 @pluginmatcher(re.compile(r"""
-    https?://trovo\.live/
-    (?:
-        (?:clip|video)/(?P<video>[^/?&]+)
-        |
-        (?P<channel>[^/?]+)
-    )
+    https?://trovo\.live/s/
+        (?P<channel>[^/?&#]+)
+        /
+        (?:\d+\?vid=
+            (?P<video>[^/?&#]+)
+        )?
 """, re.VERBOSE))
 class Trovo(Plugin):
     def __init__(self, url):
         super().__init__(url)
         groupdict = self.match.groupdict()
-        self.kind = next(((str(k), str(v)) for k, v in groupdict.items() if v is not None))
+        self.kind = next(((str(k), str(v)) for k, v in sorted(groupdict.items(), reverse=True) if v is not None))
 
         self.apollo_api = TrovoApolloAPI(client=self.session.http)
 
