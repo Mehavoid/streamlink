@@ -173,10 +173,7 @@ class Pixiv(Plugin):
         if performers and self.get_option("performer"):
             for p in performers:
                 if p["user"]["unique_name"] == self.get_option("performer"):
-                    # if someone goes online at the same time as Streamlink
-                    # was used, the hls URL might not be in the JSON data
-                    hls_movie = p.get("hls_movie")
-                    if hls_movie:
+                    if hls_movie := p.get("hls_movie"):
                         return self.hls_stream(hls_movie["url"])
 
 

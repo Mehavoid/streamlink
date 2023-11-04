@@ -121,10 +121,7 @@ class RTBF(Plugin):
 
         for stream in streams["audioUrls"]:
             match = self._stream_size_re.match(stream["url"])
-            if match is not None:
-                quality = "{}k".format(match.group("size"))
-            else:
-                quality = stream["mimetype"]
+            quality = stream["mimetype"] if match is None else f'{match.group("size")}k'
             yield quality, HTTPStream(self.session, stream["url"])
 
     def _get_video_streams(self):
@@ -155,35 +152,35 @@ class RTBF(Plugin):
                     if not url or url in urls:
                         continue
                     match = self._stream_size_re.match(url)
-                    if match is not None:
-                        quality = match.group("size")
-                    else:
-                        quality = profile
+                    quality = match.group("size") if match is not None else profile
                     yield quality, HTTPStream(self.session, url)
                     urls.append(url)
 
-            hls_url = stream_data.get("urlHls") or stream_data.get("streamUrlHls")
-            if hls_url:
+            if hls_url := stream_data.get("urlHls") or stream_data.get(
+                "streamUrlHls"
+            ):
                 if stream_data.get("isLive", False):
                     # Live streams require a token
                     hls_url = self.tokenize_stream(hls_url)
                 yield from HLSStream.parse_variant_playlist(self.session, hls_url).items()
 
-            dash_url = stream_data.get("urlDash") or stream_data.get("streamUrlDash")
-            if dash_url:
+            if dash_url := stream_data.get("urlDash") or stream_data.get(
+                "streamUrlDash"
+            ):
                 if stream_data.get("isLive", False):
                     # Live streams require a token
                     dash_url = self.tokenize_stream(dash_url)
                 yield from DASHStream.parse_manifest(self.session, dash_url).items()
 
         except OSError as err:
-            if "403 Client Error" in str(err):
                 # Check whether video is expired
-                if "startDate" in stream_data:
+            if "startDate" in stream_data:
+                if "403 Client Error" in str(err):
                     if now < parse_datetime(stream_data["startDate"]):
                         log.error("Stream is not yet available")
-                elif "endDate" in stream_data:
-                    if now > parse_datetime(stream_data["endDate"]):
+            elif "endDate" in stream_data:
+                if now > parse_datetime(stream_data["endDate"]):
+                    if "403 Client Error" in str(err):
                         log.error("Stream has expired")
 
     def _get_streams(self):

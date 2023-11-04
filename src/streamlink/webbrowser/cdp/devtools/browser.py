@@ -177,8 +177,7 @@ class PermissionDescriptor:
     pan_tilt_zoom: typing.Optional[bool] = None
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["name"] = self.name
+        json: T_JSON_DICT = {"name": self.name}
         if self.sysex is not None:
             json["sysex"] = self.sysex
         if self.user_visible_only is not None:
@@ -230,10 +229,7 @@ class Bucket:
     count: int
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["low"] = self.low
-        json["high"] = self.high
-        json["count"] = self.count
+        json: T_JSON_DICT = {"low": self.low, "high": self.high, "count": self.count}
         return json
 
     @classmethod
@@ -263,11 +259,12 @@ class Histogram:
     buckets: typing.List[Bucket]
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["name"] = self.name
-        json["sum"] = self.sum_
-        json["count"] = self.count
-        json["buckets"] = [i.to_json() for i in self.buckets]
+        json: T_JSON_DICT = {
+            "name": self.name,
+            "sum": self.sum_,
+            "count": self.count,
+            "buckets": [i.to_json() for i in self.buckets],
+        }
         return json
 
     @classmethod
@@ -296,18 +293,16 @@ def set_permission(
     :param origin: *(Optional)* Origin the permission applies to, all origins if not specified.
     :param browser_context_id: *(Optional)* Context to override. When omitted, default browser context is used.
     """
-    params: T_JSON_DICT = {}
-    params["permission"] = permission.to_json()
+    params: T_JSON_DICT = {"permission": permission.to_json()}
     params["setting"] = setting.to_json()
     if origin is not None:
         params["origin"] = origin
     if browser_context_id is not None:
         params["browserContextId"] = browser_context_id.to_json()
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Browser.setPermission",
         "params": params,
     }
-    yield cmd_dict
 
 
 def grant_permissions(
@@ -324,17 +319,15 @@ def grant_permissions(
     :param origin: *(Optional)* Origin the permission applies to, all origins if not specified.
     :param browser_context_id: *(Optional)* BrowserContext to override permissions. When omitted, default browser context is used.
     """
-    params: T_JSON_DICT = {}
-    params["permissions"] = [i.to_json() for i in permissions]
+    params: T_JSON_DICT = {"permissions": [i.to_json() for i in permissions]}
     if origin is not None:
         params["origin"] = origin
     if browser_context_id is not None:
         params["browserContextId"] = browser_context_id.to_json()
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Browser.grantPermissions",
         "params": params,
     }
-    yield cmd_dict
 
 
 def reset_permissions(
@@ -350,11 +343,10 @@ def reset_permissions(
     params: T_JSON_DICT = {}
     if browser_context_id is not None:
         params["browserContextId"] = browser_context_id.to_json()
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Browser.resetPermissions",
         "params": params,
     }
-    yield cmd_dict
 
 
 def set_download_behavior(
@@ -373,19 +365,17 @@ def set_download_behavior(
     :param download_path: *(Optional)* The default path to save downloaded files to. This is required if behavior is set to 'allow' or 'allowAndName'.
     :param events_enabled: *(Optional)* Whether to emit download events (defaults to false).
     """
-    params: T_JSON_DICT = {}
-    params["behavior"] = behavior
+    params: T_JSON_DICT = {"behavior": behavior}
     if browser_context_id is not None:
         params["browserContextId"] = browser_context_id.to_json()
     if download_path is not None:
         params["downloadPath"] = download_path
     if events_enabled is not None:
         params["eventsEnabled"] = events_enabled
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Browser.setDownloadBehavior",
         "params": params,
     }
-    yield cmd_dict
 
 
 def cancel_download(
@@ -400,25 +390,22 @@ def cancel_download(
     :param guid: Global unique identifier of the download.
     :param browser_context_id: *(Optional)* BrowserContext to perform the action in. When omitted, default browser context is used.
     """
-    params: T_JSON_DICT = {}
-    params["guid"] = guid
+    params: T_JSON_DICT = {"guid": guid}
     if browser_context_id is not None:
         params["browserContextId"] = browser_context_id.to_json()
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Browser.cancelDownload",
         "params": params,
     }
-    yield cmd_dict
 
 
 def close() -> typing.Generator[T_JSON_DICT, T_JSON_DICT, None]:
     """
     Close browser gracefully.
     """
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Browser.close",
     }
-    yield cmd_dict
 
 
 def crash() -> typing.Generator[T_JSON_DICT, T_JSON_DICT, None]:
@@ -427,10 +414,9 @@ def crash() -> typing.Generator[T_JSON_DICT, T_JSON_DICT, None]:
 
     **EXPERIMENTAL**
     """
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Browser.crash",
     }
-    yield cmd_dict
 
 
 def crash_gpu_process() -> typing.Generator[T_JSON_DICT, T_JSON_DICT, None]:
@@ -439,10 +425,9 @@ def crash_gpu_process() -> typing.Generator[T_JSON_DICT, T_JSON_DICT, None]:
 
     **EXPERIMENTAL**
     """
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Browser.crashGpuProcess",
     }
-    yield cmd_dict
 
 
 def get_version() -> typing.Generator[T_JSON_DICT, T_JSON_DICT, typing.Tuple[str, str, str, str, str]]:
@@ -525,8 +510,7 @@ def get_histogram(
     :param delta: *(Optional)* If true, retrieve delta since last delta call.
     :returns: Histogram.
     """
-    params: T_JSON_DICT = {}
-    params["name"] = name
+    params: T_JSON_DICT = {"name": name}
     if delta is not None:
         params["delta"] = delta
     cmd_dict: T_JSON_DICT = {
@@ -548,8 +532,7 @@ def get_window_bounds(
     :param window_id: Browser window id.
     :returns: Bounds information of the window. When window state is 'minimized', the restored window position and size are returned.
     """
-    params: T_JSON_DICT = {}
-    params["windowId"] = window_id.to_json()
+    params: T_JSON_DICT = {"windowId": window_id.to_json()}
     cmd_dict: T_JSON_DICT = {
         "method": "Browser.getWindowBounds",
         "params": params,
@@ -598,14 +581,12 @@ def set_window_bounds(
     :param window_id: Browser window id.
     :param bounds: New window bounds. The 'minimized', 'maximized' and 'fullscreen' states cannot be combined with 'left', 'top', 'width' or 'height'. Leaves unspecified fields unchanged.
     """
-    params: T_JSON_DICT = {}
-    params["windowId"] = window_id.to_json()
+    params: T_JSON_DICT = {"windowId": window_id.to_json()}
     params["bounds"] = bounds.to_json()
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Browser.setWindowBounds",
         "params": params,
     }
-    yield cmd_dict
 
 
 def set_dock_tile(
@@ -625,11 +606,10 @@ def set_dock_tile(
         params["badgeLabel"] = badge_label
     if image is not None:
         params["image"] = image
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Browser.setDockTile",
         "params": params,
     }
-    yield cmd_dict
 
 
 def execute_browser_command(
@@ -642,13 +622,11 @@ def execute_browser_command(
 
     :param command_id:
     """
-    params: T_JSON_DICT = {}
-    params["commandId"] = command_id.to_json()
-    cmd_dict: T_JSON_DICT = {
+    params: T_JSON_DICT = {"commandId": command_id.to_json()}
+    yield {
         "method": "Browser.executeBrowserCommand",
         "params": params,
     }
-    yield cmd_dict
 
 
 def add_privacy_sandbox_enrollment_override(
@@ -660,13 +638,11 @@ def add_privacy_sandbox_enrollment_override(
 
     :param url:
     """
-    params: T_JSON_DICT = {}
-    params["url"] = url
-    cmd_dict: T_JSON_DICT = {
+    params: T_JSON_DICT = {"url": url}
+    yield {
         "method": "Browser.addPrivacySandboxEnrollmentOverride",
         "params": params,
     }
-    yield cmd_dict
 
 
 @event_class("Browser.downloadWillBegin")

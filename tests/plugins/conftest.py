@@ -21,8 +21,7 @@ def pytest_collection_modifyitems(items: List[pytest.Item]):  # pragma: no cover
 def pytest_generate_tests(metafunc: pytest.Metafunc):
     if metafunc.cls is not None and issubclass(metafunc.cls, PluginCanHandleUrl):
         name: str = f"_parametrize_plugincanhandleurl_{metafunc.function.__name__}"
-        parametrizer: Optional[Callable[[pytest.Metafunc], None]] = globals().get(name)
-        if parametrizer:
+        if parametrizer := globals().get(name):
             parametrizer(metafunc)
 
 

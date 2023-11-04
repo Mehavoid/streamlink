@@ -36,11 +36,7 @@ class IDF1(Plugin):
         if not self.id:
             return
 
-        if re.match(r"\w+_\w+_\w+", self.id):
-            provider = "dacast"
-        else:
-            provider = "universe"
-
+        provider = "dacast" if re.match(r"\w+_\w+_\w+", self.id) else "universe"
         data = self.session.http.get(
             f"https://playback.dacast.com/content/access?contentId={self.id}&provider={provider}",
             acceptable_status=(200, 400, 403, 404),

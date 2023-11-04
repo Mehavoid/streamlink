@@ -41,11 +41,7 @@ class Buffer:
             data = current_chunk.read(bytes_left)
             bytes_left -= len(data)
 
-            if current_chunk.empty:
-                self.current_chunk = None
-            else:
-                self.current_chunk = current_chunk
-
+            self.current_chunk = None if current_chunk.empty else current_chunk
             yield data
 
     def write(self, data):

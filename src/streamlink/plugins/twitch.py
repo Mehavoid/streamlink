@@ -224,7 +224,7 @@ class UsherService:
         return req.url
 
     def channel(self, channel, **extra_params):
-        try:
+        with suppress(PluginError):
             extra_params_debug = validate.Schema(
                 validate.get("token"),
                 validate.parse_json(),
@@ -237,8 +237,6 @@ class UsherService:
                 },
             ).validate(extra_params)
             log.debug(f"{extra_params_debug!r}")
-        except PluginError:
-            pass
         return self._create_url(f"/api/channel/hls/{channel}.m3u8", **extra_params)
 
     def video(self, video_id, **extra_params):
@@ -559,9 +557,9 @@ class TwitchClientIntegrity:
 
         url = f"https://www.twitch.tv/{channel}"
         js_get_integrity_token = cls.JS_INTEGRITY_TOKEN \
-            .replace("SCRIPT_SOURCE", cls.URL_P_SCRIPT) \
-            .replace("HEADERS", json_dumps(headers)) \
-            .replace("DEVICE_ID", device_id)
+                .replace("SCRIPT_SOURCE", cls.URL_P_SCRIPT) \
+                .replace("HEADERS", json_dumps(headers)) \
+                .replace("DEVICE_ID", device_id)
         eval_timeout = session.get_option("webbrowser-timeout")
 
         async def on_main(client_session: CDPClientSession, request: devtools.fetch.RequestPaused):
@@ -594,10 +592,7 @@ class TwitchClientIntegrity:
             validate.transform(lambda val: val.lower() != "false"),
         ))
         log.info(f"Is bad bot? {is_bad_bot}")
-        if is_bad_bot:
-            return None
-
-        return token, expiration / 1000
+        return None if is_bad_bot else (token, expiration / 1000)
 
     @staticmethod
     def decode_client_integrity_token(data: str, schema: Optional[validate.Schema] = None):
@@ -742,7 +737,7 @@ class Twitch(Plugin):
             setattr(self, method, method_factory(getattr(parent, method)))
 
     def _get_metadata(self):
-        try:
+        with suppress(PluginError, TypeError):
             if self.video_id:
                 data = self.api.metadata_video(self.video_id)
             elif self.clip_name:
@@ -752,8 +747,6 @@ class Twitch(Plugin):
             else:  # pragma: no cover
                 return
             self.id, self.author, self.category, self.title = data
-        except (PluginError, TypeError):
-            pass
 
     def _client_integrity_token(self, channel: str) -> Optional[Tuple[str, str]]:
         if self.options.get("purge-client-integrity"):
@@ -791,13 +784,13 @@ class Twitch(Plugin):
             client_integrity = self._client_integrity_token(channel_or_vod) if is_live else None
             response, *data = self.api.access_token(is_live, channel_or_vod, client_integrity)
 
-            # unknown API response error: abort
-            if response != "token":
-                error, message = data
-                raise PluginError(f"{error or 'Error'}: {message or 'Unknown error'}")
+        # unknown API response error: abort
+        if response != "token":
+            error, message = data
+            raise PluginError(f"{error or 'Error'}: {message or 'Unknown error'}")
 
         # access token response was empty: stream is offline or channel doesn't exist
-        if response == "token" and data[0] is None:
+        if data[0] is None:
             raise NoStreamsError
 
         sig, token = data
@@ -812,14 +805,11 @@ class Twitch(Plugin):
         if not self.options.get("disable_reruns"):
             return False
 
-        try:
+        with suppress(PluginError, TypeError):
             stream = self.api.stream_metadata(self.channel)
             if stream["type"] != "live":
                 log.info("Reruns were disabled by command line option")
                 return True
-        except (PluginError, TypeError):
-            pass
-
         return False
 
     def _get_hls_streams_live(self):

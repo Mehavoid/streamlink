@@ -433,14 +433,14 @@ class Release:
             if not start:
                 raise ValueError(f"Could not resolve tag from reference {prev_commit}")
 
-            if not no_contributors:
-                context.update(
-                    contributors=api.get_contributors(start, prev_commit),
-                )
-            if not no_shortlog:
-                context.update(
-                    gitshortlog=Git.shortlog(start, prev_commit),
-                )
+        if not no_contributors:
+            context.update(
+                contributors=api.get_contributors(start, prev_commit),
+            )
+        if not no_shortlog:
+            context.update(
+                gitshortlog=Git.shortlog(start, prev_commit),
+            )
 
         return jinjatemplate.render(context)
 

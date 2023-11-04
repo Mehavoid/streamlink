@@ -230,7 +230,9 @@ class TestTwitchHLSStream(TestMixinStreamHLS, unittest.TestCase):
 
         self.await_write(6)
         data = self.await_read(read_all=True)
-        assert data == self.content(segments, cond=lambda s: s.num != 2 and s.num != 3), "Filters out mid-stream ad segments"
+        assert data == self.content(
+            segments, cond=lambda s: s.num not in [2, 3]
+        ), "Filters out mid-stream ad segments"
         assert all(self.called(s) for s in segments.values()), "Downloads all segments"
         assert mock_log.info.mock_calls == [
             call("Will skip ad segments"),
@@ -362,7 +364,9 @@ class TestTwitchHLSStream(TestMixinStreamHLS, unittest.TestCase):
 
         self.await_write(11)
         data = self.await_read(read_all=True)
-        assert data == self.content(segments, cond=lambda s: 2 <= s.num <= 3 or 7 <= s.num)
+        assert data == self.content(
+            segments, cond=lambda s: 2 <= s.num <= 3 or s.num >= 7
+        )
         assert mock_log.info.mock_calls == [
             call("Will skip ad segments"),
             call("Low latency streaming (HLS live edge: 2)"),

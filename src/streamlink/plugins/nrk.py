@@ -34,20 +34,22 @@ class NRK(Plugin):
 
     def _get_metadata(self, manifest_type, program_id):
         url_metadata = self._URL_METADATA.format(manifest_type=manifest_type, program_id=program_id)
-        non_playable = self.session.http.get(url_metadata, schema=validate.Schema(
-            validate.parse_json(),
-            {
-                validate.optional("nonPlayable"): validate.none_or_all(
-                    {
-                        "reason": str,
-                        "endUserMessage": str,
-                    },
-                    validate.union_get("reason", "endUserMessage"),
-                ),
-            },
-            validate.get("nonPlayable"),
-        ))
-        if non_playable:
+        if non_playable := self.session.http.get(
+            url_metadata,
+            schema=validate.Schema(
+                validate.parse_json(),
+                {
+                    validate.optional("nonPlayable"): validate.none_or_all(
+                        {
+                            "reason": str,
+                            "endUserMessage": str,
+                        },
+                        validate.union_get("reason", "endUserMessage"),
+                    ),
+                },
+                validate.get("nonPlayable"),
+            ),
+        ):
             reason, end_user_message = non_playable
             log.error(f"Not playable: {reason} - {end_user_message or 'error'}")
             return False

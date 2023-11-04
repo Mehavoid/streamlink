@@ -99,8 +99,7 @@ class Euronews(Plugin):
             return dict(vod=HTTPStream(self.session, video_url))
 
     def _get_streams(self):
-        live = self._get_live()
-        if live:
+        if live := self._get_live():
             return live
 
         root = self.session.http.get(self.url, schema=validate.Schema(

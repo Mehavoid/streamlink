@@ -15,12 +15,16 @@ from streamlink.plugin.api import validate
 ))
 class AtpChallengerTour(Plugin):
     def _get_streams(self):
-        iframe_url = self.session.http.get(self.url, schema=validate.Schema(
-            validate.parse_html(),
-            validate.xml_xpath_string(".//iframe[starts-with(@id,'vimeoPlayer_')][@src][1]/@src"),
-            validate.any(None, validate.url()),
-        ))
-        if iframe_url:
+        if iframe_url := self.session.http.get(
+            self.url,
+            schema=validate.Schema(
+                validate.parse_html(),
+                validate.xml_xpath_string(
+                    ".//iframe[starts-with(@id,'vimeoPlayer_')][@src][1]/@src"
+                ),
+                validate.any(None, validate.url()),
+            ),
+        ):
             return self.session.streams(iframe_url)
 
 

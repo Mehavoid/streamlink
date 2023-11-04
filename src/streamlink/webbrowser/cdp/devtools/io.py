@@ -40,13 +40,11 @@ def close(
 
     :param handle: Handle of the stream to close.
     """
-    params: T_JSON_DICT = {}
-    params["handle"] = handle.to_json()
-    cmd_dict: T_JSON_DICT = {
+    params: T_JSON_DICT = {"handle": handle.to_json()}
+    yield {
         "method": "IO.close",
         "params": params,
     }
-    yield cmd_dict
 
 
 def read(
@@ -66,8 +64,7 @@ def read(
         1. **data** - Data that were read.
         2. **eof** - Set if the end-of-file condition occurred while reading.
     """
-    params: T_JSON_DICT = {}
-    params["handle"] = handle.to_json()
+    params: T_JSON_DICT = {"handle": handle.to_json()}
     if offset is not None:
         params["offset"] = offset
     if size is not None:
@@ -93,8 +90,7 @@ def resolve_blob(
     :param object_id: Object id of a Blob object wrapper.
     :returns: UUID of the specified Blob.
     """
-    params: T_JSON_DICT = {}
-    params["objectId"] = object_id.to_json()
+    params: T_JSON_DICT = {"objectId": object_id.to_json()}
     cmd_dict: T_JSON_DICT = {
         "method": "IO.resolveBlob",
         "params": params,

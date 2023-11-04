@@ -104,10 +104,7 @@ class CrunchyrollAPI:
         self.cache = cache
         self.session = session
         self.session_id = session_id
-        if self.session_id:  # if the session ID is setup don't use the cached auth token
-            self.auth = None
-        else:
-            self.auth = cache.get("auth")
+        self.auth = None if self.session_id else cache.get("auth")
         self.device_id = cache.get("device_id") or self.generate_device_id()
         self.locale = locale
 
@@ -199,7 +196,7 @@ class CrunchyrollAPI:
             log.warning("Saved credentials have expired")
             return
 
-        log.debug("Credentials expire at: {}".format(data["expires"]))
+        log.debug(f'Credentials expire at: {data["expires"]}')
         self.cache.set("auth", self.auth, expires_at=data["expires"])
         return data
 
@@ -281,15 +278,13 @@ class CrunchyrollAPI:
 class Crunchyroll(Plugin):
     @classmethod
     def stream_weight(cls, key):
-        weight = STREAM_WEIGHTS.get(key)
-        if weight:
+        if weight := STREAM_WEIGHTS.get(key):
             return weight, "crunchyroll"
 
         return Plugin.stream_weight(key)
 
     def _get_streams(self):
-        beta_id = self.match.group("beta_id")
-        if beta_id:
+        if beta_id := self.match.group("beta_id"):
             json = self.session.http.get(self.url, schema=validate.Schema(
                 validate.parse_html(),
                 validate.xml_xpath_string(".//script[contains(text(), 'window.__INITIAL_STATE__')]/text()"),
@@ -380,8 +375,7 @@ class Crunchyroll(Plugin):
 
             if api.auth:
                 log.debug("Using saved credentials")
-                login = api.authenticate()
-                if login:
+                if login := api.authenticate():
                     login_name = login["user"]["username"] or login["user"]["email"]
                     log.info(f"Successfully logged in as '{login_name}'")
             if not api.auth and self.options.get("username"):

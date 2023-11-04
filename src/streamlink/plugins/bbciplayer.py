@@ -116,12 +116,9 @@ class BBCiPlayer(Plugin):
         log.debug("Looking for {0} tvip on {1}".format("master" if master else "", url))
         res = self.session.http.get(url)
         m = self.state_re.search(res.text)
-        data = m and parse_json(m.group(1))
-        if data:
+        if data := m and parse_json(m.group(1)):
             channel = data.get("channel")
-            if master:
-                return channel.get("masterBrand")
-            return channel.get("id")
+            return channel.get("masterBrand") if master else channel.get("id")
 
     def mediaselector(self, vpid):
         urls = defaultdict(set)
@@ -138,10 +135,10 @@ class BBCiPlayer(Plugin):
             log.debug(f"{len(urlitems)} {stream_type} streams")
             for url in list(urlitems):
                 try:
-                    if stream_type == "hls":
-                        yield from HLSStream.parse_variant_playlist(self.session, url).items()
                     if stream_type == "dash":
                         yield from DASHStream.parse_manifest(self.session, url).items()
+                    elif stream_type == "hls":
+                        yield from HLSStream.parse_variant_playlist(self.session, url).items()
                     log.debug(f"  OK:   {url}")
                 except Exception:
                     log.debug(f"  FAIL: {url}")
@@ -203,8 +200,7 @@ class BBCiPlayer(Plugin):
 
         if episode_id:
             log.debug(f"Loading streams for episode: {episode_id}")
-            vpid = self.find_vpid(self.url)
-            if vpid:
+            if vpid := self.find_vpid(self.url):
                 log.debug(f"Found VPID: {vpid}")
                 yield from self.mediaselector(vpid)
             else:
@@ -212,8 +208,7 @@ class BBCiPlayer(Plugin):
         elif channel_name:
             log.debug(f"Loading stream for live channel: {channel_name}")
             if self.get_option("hd"):
-                tvip = f"{self.find_tvip(self.url, master=True)}_hd"
-                if tvip:
+                if tvip := f"{self.find_tvip(self.url, master=True)}_hd":
                     log.debug(f"Trying HD stream {tvip}...")
                     try:
                         yield from self.mediaselector(tvip)
@@ -221,8 +216,7 @@ class BBCiPlayer(Plugin):
                         log.error("Failed to get HD streams, falling back to SD")
                     else:
                         return
-            tvip = self.find_tvip(self.url)
-            if tvip:
+            if tvip := self.find_tvip(self.url):
                 log.debug(f"Found TVIP: {tvip}")
                 yield from self.mediaselector(tvip)
 

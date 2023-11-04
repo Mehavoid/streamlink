@@ -44,9 +44,9 @@ class StreamError(StreamlinkError):
 
 # https://stackoverflow.com/a/49797717
 class _StreamlinkWarningMeta(type):
-    def __new__(mcs, name, bases, namespace, **kw):
+    def __new__(cls, name, bases, namespace, **kw):
         name = namespace.get("__name__", name)
-        return super().__new__(mcs, name, bases, namespace, **kw)
+        return super().__new__(cls, name, bases, namespace, **kw)
 
 
 class StreamlinkWarning(UserWarning, metaclass=_StreamlinkWarningMeta):

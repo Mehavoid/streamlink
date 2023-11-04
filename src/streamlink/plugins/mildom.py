@@ -89,10 +89,7 @@ class MildomAPI:
             return
         data = self.session.http.post(
             "https://cloudac.mildom.com/nonolive/gappserv/live/token",
-            params={
-                "__platform": "web",
-                "__guest_id": "pc-gp-{}".format(uuid4()),
-            },
+            params={"__platform": "web", "__guest_id": f"pc-gp-{uuid4()}"},
             headers={"Accept-Language": "en"},
             json={"host_id": self.channel_id, "type": "hls"},
             schema=validate.Schema(
@@ -189,8 +186,7 @@ class Mildom(Plugin):
         api = MildomAPI(self.session, channel_id=self.match.group("channel_id"), video_id=self.match.group("video_id"))
 
         if api.video_id:
-            data = api.get_vod_streams_data()
-            if data:
+            if data := api.get_vod_streams_data():
                 for stream in data:
                     yield stream["name"], HLSStream(self.session, stream["url"])
         else:

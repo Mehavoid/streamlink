@@ -68,15 +68,11 @@ class ArgumentParser(argparse.ArgumentParser):
         nargs_pattern = self._get_nargs_pattern(action)
         match = argparse._re.match(nargs_pattern, arg_strings_pattern)
 
-        # if no match, see if we can emulate optparse and return the
-        # required number of arguments regardless of their values
         if match is None:
             nargs = action.nargs if action.nargs is not None else 1
             if isinstance(nargs, numbers.Number) and len(arg_strings_pattern) >= nargs:
                 return nargs
 
-        # raise an exception if we weren't able to find a match
-        if match is None:
             nargs_errors = {
                 None: argparse._("expected one argument"),
                 argparse.OPTIONAL: argparse._("expected at most one argument"),

@@ -42,8 +42,7 @@ class SerializationOptions:
     max_depth: typing.Optional[int] = None
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["serialization"] = self.serialization
+        json: T_JSON_DICT = {"serialization": self.serialization}
         if self.max_depth is not None:
             json["maxDepth"] = self.max_depth
         return json
@@ -73,8 +72,7 @@ class DeepSerializedValue:
     weak_local_object_reference: typing.Optional[int] = None
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["type"] = self.type_
+        json: T_JSON_DICT = {"type": self.type_}
         if self.value is not None:
             json["value"] = self.value
         if self.object_id is not None:
@@ -165,8 +163,7 @@ class RemoteObject:
     custom_preview: typing.Optional[CustomPreview] = None
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["type"] = self.type_
+        json: T_JSON_DICT = {"type": self.type_}
         if self.subtype is not None:
             json["subtype"] = self.subtype
         if self.class_name is not None:
@@ -218,8 +215,7 @@ class CustomPreview:
     body_getter_id: typing.Optional[RemoteObjectId] = None
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["header"] = self.header
+        json: T_JSON_DICT = {"header": self.header}
         if self.body_getter_id is not None:
             json["bodyGetterId"] = self.body_getter_id.to_json()
         return json
@@ -256,10 +252,11 @@ class ObjectPreview:
     entries: typing.Optional[typing.List[EntryPreview]] = None
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["type"] = self.type_
-        json["overflow"] = self.overflow
-        json["properties"] = [i.to_json() for i in self.properties]
+        json: T_JSON_DICT = {
+            "type": self.type_,
+            "overflow": self.overflow,
+            "properties": [i.to_json() for i in self.properties],
+        }
         if self.subtype is not None:
             json["subtype"] = self.subtype
         if self.description is not None:
@@ -298,9 +295,7 @@ class PropertyPreview:
     subtype: typing.Optional[str] = None
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["name"] = self.name
-        json["type"] = self.type_
+        json: T_JSON_DICT = {"name": self.name, "type": self.type_}
         if self.value is not None:
             json["value"] = self.value
         if self.value_preview is not None:
@@ -329,8 +324,7 @@ class EntryPreview:
     key: typing.Optional[ObjectPreview] = None
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["value"] = self.value.to_json()
+        json: T_JSON_DICT = {"value": self.value.to_json()}
         if self.key is not None:
             json["key"] = self.key.to_json()
         return json
@@ -383,10 +377,11 @@ class PropertyDescriptor:
     symbol: typing.Optional[RemoteObject] = None
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["name"] = self.name
-        json["configurable"] = self.configurable
-        json["enumerable"] = self.enumerable
+        json: T_JSON_DICT = {
+            "name": self.name,
+            "configurable": self.configurable,
+            "enumerable": self.enumerable,
+        }
         if self.value is not None:
             json["value"] = self.value.to_json()
         if self.writable is not None:
@@ -431,8 +426,7 @@ class InternalPropertyDescriptor:
     value: typing.Optional[RemoteObject] = None
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["name"] = self.name
+        json: T_JSON_DICT = {"name": self.name}
         if self.value is not None:
             json["value"] = self.value.to_json()
         return json
@@ -465,8 +459,7 @@ class PrivatePropertyDescriptor:
     set_: typing.Optional[RemoteObject] = None
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["name"] = self.name
+        json: T_JSON_DICT = {"name": self.name}
         if self.value is not None:
             json["value"] = self.value.to_json()
         if self.get is not None:
@@ -558,8 +551,7 @@ class ExecutionContextDescription:
     aux_data: typing.Optional[dict] = None
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["id"] = self.id_.to_json()
+        json: T_JSON_DICT = {"id": self.id_.to_json()}
         json["origin"] = self.origin
         json["name"] = self.name
         json["uniqueId"] = self.unique_id
@@ -617,11 +609,12 @@ class ExceptionDetails:
     exception_meta_data: typing.Optional[dict] = None
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["exceptionId"] = self.exception_id
-        json["text"] = self.text
-        json["lineNumber"] = self.line_number
-        json["columnNumber"] = self.column_number
+        json: T_JSON_DICT = {
+            "exceptionId": self.exception_id,
+            "text": self.text,
+            "lineNumber": self.line_number,
+            "columnNumber": self.column_number,
+        }
         if self.script_id is not None:
             json["scriptId"] = self.script_id.to_json()
         if self.url is not None:
@@ -703,9 +696,10 @@ class CallFrame:
     column_number: int
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["functionName"] = self.function_name
-        json["scriptId"] = self.script_id.to_json()
+        json: T_JSON_DICT = {
+            "functionName": self.function_name,
+            "scriptId": self.script_id.to_json(),
+        }
         json["url"] = self.url
         json["lineNumber"] = self.line_number
         json["columnNumber"] = self.column_number
@@ -741,8 +735,7 @@ class StackTrace:
     parent_id: typing.Optional[StackTraceId] = None
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["callFrames"] = [i.to_json() for i in self.call_frames]
+        json: T_JSON_DICT = {"callFrames": [i.to_json() for i in self.call_frames]}
         if self.description is not None:
             json["description"] = self.description
         if self.parent is not None:
@@ -787,8 +780,7 @@ class StackTraceId:
     debugger_id: typing.Optional[UniqueDebuggerId] = None
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["id"] = self.id_
+        json: T_JSON_DICT = {"id": self.id_}
         if self.debugger_id is not None:
             json["debuggerId"] = self.debugger_id.to_json()
         return json
@@ -817,8 +809,7 @@ def await_promise(
         0. **result** - Promise result. Will contain rejected value if promise was rejected.
         1. **exceptionDetails** - *(Optional)* Exception details if stack strace is available.
     """
-    params: T_JSON_DICT = {}
-    params["promiseObjectId"] = promise_object_id.to_json()
+    params: T_JSON_DICT = {"promiseObjectId": promise_object_id.to_json()}
     if return_by_value is not None:
         params["returnByValue"] = return_by_value
     if generate_preview is not None:
@@ -873,8 +864,7 @@ def call_function_on(
         0. **result** - Call result.
         1. **exceptionDetails** - *(Optional)* Exception details.
     """
-    params: T_JSON_DICT = {}
-    params["functionDeclaration"] = function_declaration
+    params: T_JSON_DICT = {"functionDeclaration": function_declaration}
     if object_id is not None:
         params["objectId"] = object_id.to_json()
     if arguments is not None:
@@ -930,10 +920,11 @@ def compile_script(
         0. **scriptId** - *(Optional)* Id of the script.
         1. **exceptionDetails** - *(Optional)* Exception details.
     """
-    params: T_JSON_DICT = {}
-    params["expression"] = expression
-    params["sourceURL"] = source_url
-    params["persistScript"] = persist_script
+    params: T_JSON_DICT = {
+        "expression": expression,
+        "sourceURL": source_url,
+        "persistScript": persist_script,
+    }
     if execution_context_id is not None:
         params["executionContextId"] = execution_context_id.to_json()
     cmd_dict: T_JSON_DICT = {
@@ -951,20 +942,18 @@ def disable() -> typing.Generator[T_JSON_DICT, T_JSON_DICT, None]:
     """
     Disables reporting of execution contexts creation.
     """
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Runtime.disable",
     }
-    yield cmd_dict
 
 
 def discard_console_entries() -> typing.Generator[T_JSON_DICT, T_JSON_DICT, None]:
     """
     Discards collected exceptions and console API calls.
     """
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Runtime.discardConsoleEntries",
     }
-    yield cmd_dict
 
 
 def enable() -> typing.Generator[T_JSON_DICT, T_JSON_DICT, None]:
@@ -973,10 +962,9 @@ def enable() -> typing.Generator[T_JSON_DICT, T_JSON_DICT, None]:
     When the reporting gets enabled the event will be sent immediately for each existing execution
     context.
     """
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Runtime.enable",
     }
-    yield cmd_dict
 
 
 def evaluate(
@@ -1023,8 +1011,7 @@ def evaluate(
         0. **result** - Evaluation result.
         1. **exceptionDetails** - *(Optional)* Exception details.
     """
-    params: T_JSON_DICT = {}
-    params["expression"] = expression
+    params: T_JSON_DICT = {"expression": expression}
     if object_group is not None:
         params["objectGroup"] = object_group
     if include_command_line_api is not None:
@@ -1128,8 +1115,7 @@ def get_properties(
         2. **privateProperties** - *(Optional)* Object private properties.
         3. **exceptionDetails** - *(Optional)* Exception details.
     """
-    params: T_JSON_DICT = {}
-    params["objectId"] = object_id.to_json()
+    params: T_JSON_DICT = {"objectId": object_id.to_json()}
     if own_properties is not None:
         params["ownProperties"] = own_properties
     if accessor_properties_only is not None:
@@ -1180,8 +1166,7 @@ def query_objects(
     :param object_group: *(Optional)* Symbolic group name that can be used to release the results.
     :returns: Array with objects.
     """
-    params: T_JSON_DICT = {}
-    params["prototypeObjectId"] = prototype_object_id.to_json()
+    params: T_JSON_DICT = {"prototypeObjectId": prototype_object_id.to_json()}
     if object_group is not None:
         params["objectGroup"] = object_group
     cmd_dict: T_JSON_DICT = {
@@ -1200,13 +1185,11 @@ def release_object(
 
     :param object_id: Identifier of the object to release.
     """
-    params: T_JSON_DICT = {}
-    params["objectId"] = object_id.to_json()
-    cmd_dict: T_JSON_DICT = {
+    params: T_JSON_DICT = {"objectId": object_id.to_json()}
+    yield {
         "method": "Runtime.releaseObject",
         "params": params,
     }
-    yield cmd_dict
 
 
 def release_object_group(
@@ -1217,23 +1200,20 @@ def release_object_group(
 
     :param object_group: Symbolic object group name.
     """
-    params: T_JSON_DICT = {}
-    params["objectGroup"] = object_group
-    cmd_dict: T_JSON_DICT = {
+    params: T_JSON_DICT = {"objectGroup": object_group}
+    yield {
         "method": "Runtime.releaseObjectGroup",
         "params": params,
     }
-    yield cmd_dict
 
 
 def run_if_waiting_for_debugger() -> typing.Generator[T_JSON_DICT, T_JSON_DICT, None]:
     """
     Tells inspected instance to run if it was waiting for debugger to attach.
     """
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Runtime.runIfWaitingForDebugger",
     }
-    yield cmd_dict
 
 
 def run_script(
@@ -1262,8 +1242,7 @@ def run_script(
         0. **result** - Run result.
         1. **exceptionDetails** - *(Optional)* Exception details.
     """
-    params: T_JSON_DICT = {}
-    params["scriptId"] = script_id.to_json()
+    params: T_JSON_DICT = {"scriptId": script_id.to_json()}
     if execution_context_id is not None:
         params["executionContextId"] = execution_context_id.to_json()
     if object_group is not None:
@@ -1297,13 +1276,11 @@ def set_async_call_stack_depth(
 
     :param max_depth: Maximum depth of async call stacks. Setting to ```0``` will effectively disable collecting async call stacks (default).
     """
-    params: T_JSON_DICT = {}
-    params["maxDepth"] = max_depth
-    cmd_dict: T_JSON_DICT = {
+    params: T_JSON_DICT = {"maxDepth": max_depth}
+    yield {
         "method": "Runtime.setAsyncCallStackDepth",
         "params": params,
     }
-    yield cmd_dict
 
 
 def set_custom_object_formatter_enabled(
@@ -1316,13 +1293,11 @@ def set_custom_object_formatter_enabled(
 
     :param enabled:
     """
-    params: T_JSON_DICT = {}
-    params["enabled"] = enabled
-    cmd_dict: T_JSON_DICT = {
+    params: T_JSON_DICT = {"enabled": enabled}
+    yield {
         "method": "Runtime.setCustomObjectFormatterEnabled",
         "params": params,
     }
-    yield cmd_dict
 
 
 def set_max_call_stack_size_to_capture(
@@ -1335,13 +1310,11 @@ def set_max_call_stack_size_to_capture(
 
     :param size:
     """
-    params: T_JSON_DICT = {}
-    params["size"] = size
-    cmd_dict: T_JSON_DICT = {
+    params: T_JSON_DICT = {"size": size}
+    yield {
         "method": "Runtime.setMaxCallStackSizeToCapture",
         "params": params,
     }
-    yield cmd_dict
 
 
 def terminate_execution() -> typing.Generator[T_JSON_DICT, T_JSON_DICT, None]:
@@ -1351,10 +1324,9 @@ def terminate_execution() -> typing.Generator[T_JSON_DICT, T_JSON_DICT, None]:
 
     **EXPERIMENTAL**
     """
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Runtime.terminateExecution",
     }
-    yield cmd_dict
 
 
 def add_binding(
@@ -1376,17 +1348,15 @@ def add_binding(
     :param execution_context_id: *(Optional)* If specified, the binding would only be exposed to the specified execution context. If omitted and ```executionContextName```` is not set, the binding is exposed to all execution contexts of the target. This parameter is mutually exclusive with ````executionContextName````. Deprecated in favor of ````executionContextName```` due to an unclear use case and bugs in implementation (crbug.com/1169639). ````executionContextId```` will be removed in the future.
     :param execution_context_name: **(EXPERIMENTAL)** *(Optional)* If specified, the binding is exposed to the executionContext with matching name, even for contexts created after the binding is added. See also ````ExecutionContext.name```` and ````worldName```` parameter to ````Page.addScriptToEvaluateOnNewDocument````. This parameter is mutually exclusive with ````executionContextId```.
     """
-    params: T_JSON_DICT = {}
-    params["name"] = name
+    params: T_JSON_DICT = {"name": name}
     if execution_context_id is not None:
         params["executionContextId"] = execution_context_id.to_json()
     if execution_context_name is not None:
         params["executionContextName"] = execution_context_name
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Runtime.addBinding",
         "params": params,
     }
-    yield cmd_dict
 
 
 def remove_binding(
@@ -1400,13 +1370,11 @@ def remove_binding(
 
     :param name:
     """
-    params: T_JSON_DICT = {}
-    params["name"] = name
-    cmd_dict: T_JSON_DICT = {
+    params: T_JSON_DICT = {"name": name}
+    yield {
         "method": "Runtime.removeBinding",
         "params": params,
     }
-    yield cmd_dict
 
 
 def get_exception_details(
@@ -1424,8 +1392,7 @@ def get_exception_details(
     :param error_object_id: The error object for which to resolve the exception details.
     :returns:
     """
-    params: T_JSON_DICT = {}
-    params["errorObjectId"] = error_object_id.to_json()
+    params: T_JSON_DICT = {"errorObjectId": error_object_id.to_json()}
     cmd_dict: T_JSON_DICT = {
         "method": "Runtime.getExceptionDetails",
         "params": params,

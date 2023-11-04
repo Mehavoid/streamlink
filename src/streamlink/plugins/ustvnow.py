@@ -70,8 +70,7 @@ class USTVNow(Plugin):
         fkey = SHA256.new(rkey).hexdigest()[:32].encode("utf8")
 
         cipher = AES.new(fkey, AES.MODE_CBC, riv)
-        decrypted = cipher.decrypt(base64.b64decode(data))
-        if decrypted:
+        if decrypted := cipher.decrypt(base64.b64decode(data)):
             return unpad(decrypted, 16, "pkcs7")
         else:
             return decrypted
@@ -82,8 +81,7 @@ class USTVNow(Plugin):
         if not self._encryption_config:
             res = self.session.http.get(url)
             m = self._main_js_re.search(res.text)
-            main_js_path = m and m.group(1)
-            if main_js_path:
+            if main_js_path := m and m.group(1):
                 res = self.session.http.get(urljoin(url, main_js_path))
                 self._encryption_config = dict(self._enc_key_re.findall(res.text))
 
@@ -116,7 +114,7 @@ class USTVNow(Plugin):
             data = res.json()
             if data["status"]:
                 self._token = data["response"]["sessionId"]
-                log.debug("New token: {}".format(self._token))
+                log.debug(f"New token: {self._token}")
             else:
                 log.error("Token acquisition failed: {details} ({detail})".format(**data["error"]))
                 raise PluginError("could not obtain token")

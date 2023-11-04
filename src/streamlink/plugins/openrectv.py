@@ -114,22 +114,18 @@ class OPENRECtv(Plugin):
             log.error("Failed to get video stream: {0}".format(data["message"]))
 
     def get_author(self):
-        mdata = self._get_movie_data()
-        if mdata:
+        if mdata := self._get_movie_data():
             return mdata["channel"]["name"]
 
     def get_title(self):
-        mdata = self._get_movie_data()
-        if mdata:
+        if mdata := self._get_movie_data():
             return mdata["title"]
 
     def _get_streams(self):
         self.video_id = self.url.rsplit("/", 1)[-1]
         if self.get_option("email") and self.get_option("password"):
             self.login(self.get_option("email"), self.get_option("password"))
-        mdata = self._get_movie_data()
-
-        if mdata:
+        if mdata := self._get_movie_data():
             log.debug("Found video: {0} ({1})".format(mdata["title"], mdata["id"]))
             m3u8_file = None
             # subscription

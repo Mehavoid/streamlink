@@ -27,8 +27,7 @@ class NowNews(Plugin):
     def _get_streams(self):
         res = self.session.http.get(self.url)
         m = self.epg_re.search(res.text)
-        channel_id = m and m.group(1)
-        if channel_id:
+        if channel_id := m and m.group(1):
             log.debug("Channel ID: {0}".format(channel_id))
 
             if channel_id == "332":

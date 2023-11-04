@@ -128,11 +128,7 @@ class DASHStreamWorker(SegmentedStreamWorker[DASHSegment, Response]):
                     self.close()
                     return
 
-                if not self.reload():
-                    back_off_factor = max(back_off_factor * 1.3, 10.0)
-                else:
-                    back_off_factor = 1
-
+                back_off_factor = max(back_off_factor * 1.3, 10.0) if not self.reload() else 1
                 init = False
 
     def reload(self):
@@ -230,11 +226,7 @@ class DASHStream(Stream):
         return json
 
     def to_url(self):
-        if self.mpd.url is None:
-            return super().to_url()
-
-        # the MPD URL has already been prepared by the initial request in `parse_manifest`
-        return self.mpd.url
+        return super().to_url() if self.mpd.url is None else self.mpd.url
 
     @staticmethod
     def fetch_manifest(session: Streamlink, url_or_manifest: str, **request_args) -> Tuple[str, Dict[str, Any]]:

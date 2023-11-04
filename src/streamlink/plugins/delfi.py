@@ -99,20 +99,24 @@ class Delfi(Plugin):
             validate.parse_html(),
         ))
 
-        video_id = root.xpath("string(.//div[@data-provider='dvideo'][@data-id][1]/@data-id)")
-        if video_id:
+        if video_id := root.xpath(
+            "string(.//div[@data-provider='dvideo'][@data-id][1]/@data-id)"
+        ):
             return self._get_streams_api(str(video_id))
 
-        yt_id = root.xpath("string(.//script[contains(@src,'/yt.js')][@data-video]/@data-video)")
-        if yt_id:
+        if yt_id := root.xpath(
+            "string(.//script[contains(@src,'/yt.js')][@data-video]/@data-video)"
+        ):
             return self.session.streams(f"https://www.youtube.com/watch?v={yt_id}")
 
-        yt_iframe = root.xpath("string(.//iframe[starts-with(@src,'https://www.youtube.com/')][1]/@src)")
-        if yt_iframe:
+        if yt_iframe := root.xpath(
+            "string(.//iframe[starts-with(@src,'https://www.youtube.com/')][1]/@src)"
+        ):
             return self.session.streams(str(yt_iframe))
 
-        delfi = root.xpath("string(.//iframe[@name='delfi-stream'][@src][1]/@src)")
-        if delfi:
+        if delfi := root.xpath(
+            "string(.//iframe[@name='delfi-stream'][@src][1]/@src)"
+        ):
             return self._get_streams_delfi(str(delfi))
 
 

@@ -19,20 +19,18 @@ def disable() -> typing.Generator[T_JSON_DICT, T_JSON_DICT, None]:
     """
     Disables inspector domain notifications.
     """
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Inspector.disable",
     }
-    yield cmd_dict
 
 
 def enable() -> typing.Generator[T_JSON_DICT, T_JSON_DICT, None]:
     """
     Enables inspector domain notifications.
     """
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Inspector.enable",
     }
-    yield cmd_dict
 
 
 @event_class("Inspector.detached")

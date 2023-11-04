@@ -53,8 +53,7 @@ class WebsocketClient(Thread):
             header.append(f"User-Agent: {session.http.headers['User-Agent']!s}")
 
         proxy_options: Dict[str, Any] = {}
-        http_proxy: Optional[str] = session.get_option("http-proxy")
-        if http_proxy:
+        if http_proxy := session.get_option("http-proxy"):
             p = urlparse(http_proxy)
             proxy_options["proxy_type"] = p.scheme
             proxy_options["http_proxy_host"] = p.hostname

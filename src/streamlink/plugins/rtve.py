@@ -177,22 +177,23 @@ class Rtve(Plugin):
         streams = HLSStream.parse_variant_playlist(self.session, url).items()
 
         if self.session.get_option("mux-subtitles"):
-            subs = self.session.http.get(
+            if subs := self.session.http.get(
                 self.URL_SUBTITLES.format(id=self.id),
                 schema=validate.Schema(
                     validate.parse_json(),
                     {
                         "page": {
-                            "items": [{
-                                "lang": str,
-                                "src": validate.url(),
-                            }],
+                            "items": [
+                                {
+                                    "lang": str,
+                                    "src": validate.url(),
+                                }
+                            ],
                         },
                     },
                     validate.get(("page", "items")),
                 ),
-            )
-            if subs:
+            ):
                 subtitles = {
                     s["lang"]: HTTPStream(self.session, update_scheme("https://", s["src"], force=True))
                     for s in subs

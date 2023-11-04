@@ -172,10 +172,9 @@ def capturewarnings(capture=False):
         if _showwarning_default is None:
             _showwarning_default = warnings.showwarning
             warnings.showwarning = _showwarning
-    else:
-        if _showwarning_default is not None:
-            warnings.showwarning = _showwarning_default
-            _showwarning_default = None
+    elif _showwarning_default is not None:
+        warnings.showwarning = _showwarning_default
+        _showwarning_default = None
 
 
 # noinspection PyShadowingBuiltins,PyPep8Naming

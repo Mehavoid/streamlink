@@ -111,7 +111,7 @@ class MPDParsers:
     @staticmethod
     def timedelta(timescale: float = 1):
         def _timedelta(seconds):
-            return timedelta(seconds=int(float(seconds) / float(timescale)))
+            return timedelta(seconds=int(float(seconds) / timescale))
 
         return _timedelta
 
@@ -209,10 +209,7 @@ class MPDNode:
         self.attributes.add(key)
         if key in self.attrib:
             value = self.attrib.get(key)
-            if parser and callable(parser):
-                return parser(value)
-            else:
-                return value
+            return parser(value) if parser and callable(parser) else value
         elif inherited:
             value = self.walk_back_get_attr(key, inherited)
             if value is not None:
@@ -620,9 +617,9 @@ class Representation(_RepresentationBaseType):
 
         # segmentBase = self.segmentBase or self.walk_back_get_attr("segmentBase")
         segmentList = self.segmentList or self.walk_back_get_attr("segmentList")
-        segmentTemplate = self.segmentTemplate or self.walk_back_get_attr("segmentTemplate")
-
-        if segmentTemplate:
+        if segmentTemplate := self.segmentTemplate or self.walk_back_get_attr(
+            "segmentTemplate"
+        ):
             yield from segmentTemplate.segments(
                 self.ident,
                 self.base_url,
@@ -773,8 +770,7 @@ class SegmentTemplate(_MultipleSegmentBaseType):
         **kwargs,
     ) -> Iterator[DASHSegment]:
         if kwargs.pop("init", True):  # pragma: no branch
-            init_url = self.format_initialization(base_url, **kwargs)
-            if init_url:  # pragma: no branch
+            if init_url := self.format_initialization(base_url, **kwargs):
                 yield DASHSegment(
                     uri=init_url,
                     num=-1,
@@ -820,8 +816,10 @@ class SegmentTemplate(_MultipleSegmentBaseType):
 
         if self.root.type == "static":
             available_iter = repeat(self.period.availabilityStartTime)
-            duration = self.period.duration.total_seconds() or self.root.mediaPresentationDuration.total_seconds()
-            if duration:
+            if (
+                duration := self.period.duration.total_seconds()
+                or self.root.mediaPresentationDuration.total_seconds()
+            ):
                 number_iter = range(self.startNumber, int(duration / self.duration_seconds) + 1)
             else:
                 number_iter = count(self.startNumber)

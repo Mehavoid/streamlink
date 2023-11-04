@@ -51,8 +51,7 @@ class Kugou(Plugin):
 
     def _get_streams(self):
         res = self.session.http.get(self.url)
-        m = self._roomid_re.search(res.text)
-        if m:
+        if m := self._roomid_re.search(res.text):
             room_id = m.group(1)
         else:
             room_id = self.match.group("room_id")
@@ -81,12 +80,11 @@ class Kugou(Plugin):
 
         if stream_data.get("httpshls"):
             for hls_url in stream_data["httpshls"]:
-                s = HLSStream.parse_variant_playlist(self.session, hls_url)
-                if not s:
-                    yield "live", HLSStream(self.session, hls_url)
-                else:
+                if s := HLSStream.parse_variant_playlist(self.session, hls_url):
                     yield from s.items()
 
+                else:
+                    yield "live", HLSStream(self.session, hls_url)
         if stream_data.get("httpsflv"):
             for http_url in stream_data["httpsflv"]:
                 yield "live", HTTPStream(self.session, http_url)

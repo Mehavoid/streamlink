@@ -203,11 +203,10 @@ class Ceskatelevize(Plugin):
             res = self.session.http.head(url, allow_redirects=True)
             log.debug(f"res.url={res.url}")
             p = urlparse(res.url).path
-            if not p.split("/")[-1].startswith(str(self.id)):
-                log.error("This stream is not available")
-                return
-            else:
+            if p.split("/")[-1].startswith(str(self.id)):
                 return DASHStream.parse_manifest(self.session, res.url)
+            log.error("This stream is not available")
+            return
 
 
 __plugin__ = Ceskatelevize

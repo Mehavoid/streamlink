@@ -74,23 +74,25 @@ class HTV(Plugin):
             log.error("API error: success not true")
             return
 
-        hls_url = self.session.http.get(
+        if hls_url := self.session.http.get(
             json["chanelUrl"],
             headers={"Referer": self.url},
             schema=validate.Schema(
                 validate.parse_html(),
-                validate.xml_xpath_string(".//script[contains(text(), 'playlist.m3u8')]/text()"),
+                validate.xml_xpath_string(
+                    ".//script[contains(text(), 'playlist.m3u8')]/text()"
+                ),
                 validate.none_or_all(
-                    re.compile(r"""var\s+iosUrl\s*=\s*(?P<q>")(?P<url>.+?)(?P=q)"""),
+                    re.compile(
+                        r"""var\s+iosUrl\s*=\s*(?P<q>")(?P<url>.+?)(?P=q)"""
+                    ),
                     validate.none_or_all(
                         validate.get("url"),
                         validate.url(),
                     ),
                 ),
             ),
-        )
-
-        if hls_url:
+        ):
             return HLSStream.parse_variant_playlist(
                 self.session,
                 hls_url,

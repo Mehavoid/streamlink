@@ -187,8 +187,7 @@ class Albavision(Plugin):
             log.info("This stream may be off-air or not available in your country")
             return
 
-        token = self._get_token()
-        if token:
+        if token := self._get_token():
             live_url = update_qsd(live_url, {"iut": token})
 
         return HLSStream.parse_variant_playlist(self.session, live_url)

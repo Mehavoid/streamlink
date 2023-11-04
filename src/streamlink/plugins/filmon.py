@@ -189,8 +189,7 @@ class Filmon(Plugin):
 
     @classmethod
     def stream_weight(cls, key):
-        weight = cls.quality_weights.get(key)
-        if weight:
+        if weight := cls.quality_weights.get(key):
             return weight, "filmon"
 
         return super().stream_weight(key)
@@ -206,8 +205,9 @@ class Filmon(Plugin):
         if vod_id:
             for quality, url, _timeout in self.api.vod(vod_id):
                 if url.endswith(".m3u8"):
-                    streams = HLSStream.parse_variant_playlist(self.session, url)
-                    if streams:
+                    if streams := HLSStream.parse_variant_playlist(
+                        self.session, url
+                    ):
                         yield from streams.items()
                         return
                     yield quality, HLSStream(self.session, url)

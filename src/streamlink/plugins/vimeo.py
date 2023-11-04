@@ -157,11 +157,7 @@ class Vimeo(Plugin):
         ))
 
     def _get_streams(self):
-        if self.matches["player"]:
-            data = self._query_player()
-        else:
-            data = self._query_api()
-
+        data = self._query_player() if self.matches["player"] else self._query_api()
         if not data:
             return
 

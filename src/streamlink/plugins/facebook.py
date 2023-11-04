@@ -54,7 +54,7 @@ class Facebook(Plugin):
             stream_url = match.group("url")
             if "\\/" in stream_url:
                 # if the URL is json encoded, decode it
-                stream_url = parse_json("\"{}\"".format(stream_url))
+                stream_url = parse_json(f'\"{stream_url}\"')
             if ".mpd" in stream_url:
                 yield from DASHStream.parse_manifest(self.session, stream_url).items()
             elif ".mp4" in stream_url:
@@ -62,8 +62,7 @@ class Facebook(Plugin):
             else:
                 log.debug("Non-dash/mp4 stream: {0}".format(stream_url))
 
-        match = self._dash_manifest_re.search(res.text)
-        if match:
+        if match := self._dash_manifest_re.search(res.text):
             # facebook replaces "<" characters with the substring "\\x3C"
             manifest = match.group("manifest").replace("\\/", "/")
             manifest = bytes(unquote_plus(manifest), "utf-8").decode("unicode_escape")
@@ -102,10 +101,8 @@ class Facebook(Plugin):
         # fallback on to playlist
         log.debug("Falling back to playlist regex")
         match = self._playlist_re.search(res.text)
-        playlist = match and match.group(1)
-        if playlist:
-            match = self._plurl_re.search(playlist)
-            if match:
+        if playlist := match and match.group(1):
+            if match := self._plurl_re.search(playlist):
                 url = match.group(1)
                 yield "sd", HTTPStream(self.session, url)
                 return
@@ -120,14 +117,11 @@ class Facebook(Plugin):
             "__rev": self._DEFAULT_REV,
             "fb_dtsg": "",
         }
-        match = self._pc_re.search(res.text)
-        if match:
+        if match := self._pc_re.search(res.text):
             data["__pc"] = match.group(1)
-        match = self._rev_re.search(res.text)
-        if match:
+        if match := self._rev_re.search(res.text):
             data["__rev"] = match.group(1)
-        match = self._dtsg_re.search(res.text)
-        if match:
+        if match := self._dtsg_re.search(res.text):
             data["fb_dtsg"] = match.group(1)
         res = self.session.http.post(
             url,

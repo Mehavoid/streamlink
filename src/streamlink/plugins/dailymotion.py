@@ -63,8 +63,7 @@ class DailyMotion(Plugin):
             ),
         )
 
-        error = media.get("error")
-        if error:
+        if error := media.get("error"):
             if error.get("type") == "not_found":
                 log.error(f"Unknown media ID: {media_id}")
             else:

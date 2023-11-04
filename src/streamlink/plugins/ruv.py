@@ -106,18 +106,12 @@ class Ruv(Plugin):
                     base_url + token,
                 )
 
-        else:
-            single_stream_match = _single_re.search(lines)
-
-            if single_stream_match:
-                url = single_stream_match.group("url")
-                yield "576p", HLSStream(self.session, url)
+        elif single_stream_match := _single_re.search(lines):
+            url = single_stream_match.group("url")
+            yield "576p", HLSStream(self.session, url)
 
     def _get_streams(self):
-        if self.live:
-            return self._get_live_streams()
-        else:
-            return self._get_sarpurinn_streams()
+        return self._get_live_streams() if self.live else self._get_sarpurinn_streams()
 
 
 __plugin__ = Ruv

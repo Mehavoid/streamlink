@@ -76,8 +76,7 @@ class HLSStreamWriter(SegmentedStreamWriter[HLSSegment, Response]):
         self.stream_data = options.get("hls-segment-stream-data")
 
         self.ignore_names: Optional[re.Pattern] = None
-        ignore_names = {*options.get("hls-segment-ignore-names")}
-        if ignore_names:
+        if ignore_names := {*options.get("hls-segment-ignore-names")}:
             segments = "|".join(map(re.escape, ignore_names))
             # noinspection RegExpUnnecessaryNonCapturingGroup
             self.ignore_names = re.compile(rf"(?:{segments})\.ts", re.IGNORECASE)
@@ -587,10 +586,7 @@ class MuxedHLSStream(MuxedStream["HLSStream"]):
     def to_manifest_url(self):
         url = self.multivariant.uri if self.multivariant and self.multivariant.uri else self.url_master
 
-        if url is None:
-            return super().to_manifest_url()
-
-        return url
+        return super().to_manifest_url() if url is None else url
 
 
 class HLSStream(HTTPStream):
@@ -772,11 +768,7 @@ class HLSStream(HTTPStream):
             if playlist.stream_info.bandwidth:
                 bw = playlist.stream_info.bandwidth
 
-                if bw >= 1000:
-                    names["bitrate"] = f"{int(bw / 1000.0)}k"
-                else:
-                    names["bitrate"] = f"{bw / 1000.0}k"
-
+                names["bitrate"] = f"{int(bw / 1000.0)}k" if bw >= 1000 else f"{bw / 1000.0}k"
             if name_fmt:
                 stream_name = name_fmt.format(**names)
             else:
@@ -794,7 +786,7 @@ class HLSStream(HTTPStream):
 
             if stream_name in streams:  # rename duplicate streams
                 stream_name = f"{stream_name}_alt"
-                num_alts = len([k for k in streams.keys() if k.startswith(stream_name)])
+                num_alts = len([k for k in streams if k.startswith(stream_name)])
 
                 # We shouldn't need more than 2 alt streams
                 if num_alts >= 2:

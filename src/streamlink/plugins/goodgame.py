@@ -138,8 +138,7 @@ class GoodGame(Plugin):
         log.debug("Channel is offline, checking for embedded players...")
         for p_title, p_online, p_url in players:
             if p_title == "Twitch" and p_online:
-                channel = dict(parse_qsl(p_url.query)).get("channel")
-                if channel:
+                if channel := dict(parse_qsl(p_url.query)).get("channel"):
                     log.debug(f"Redirecting to Twitch: {channel=}")
                     return self.session.streams(f"twitch.tv/{channel}")
 

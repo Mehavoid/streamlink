@@ -417,9 +417,7 @@ class TestDASHStreamWorker:
             ident=(None, None, "1"),
             timestamp=timestamp,
         )
-        worker = DASHStreamWorker(reader)
-
-        return worker
+        return DASHStreamWorker(reader)
 
     def test_dynamic_reload(
         self,

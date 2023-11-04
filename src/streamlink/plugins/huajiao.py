@@ -79,7 +79,11 @@ class Huajiao(Plugin):
                 "r": random.random(),
             },
             schema=validate.Schema(
-                validate.transform(lambda text: base64.b64decode(text[0:3] + text[6:]).decode("utf-8")),
+                validate.transform(
+                    lambda text: base64.b64decode(text[:3] + text[6:]).decode(
+                        "utf-8"
+                    )
+                ),
                 validate.parse_json(),
                 {"main": validate.url()},
                 validate.get("main"),

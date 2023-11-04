@@ -489,8 +489,9 @@ class UStreamTV(Plugin):
     STREAM_READY_TIMEOUT = 15
 
     def _get_media_app(self):
-        video_id = self.match.group("video_id") or self.match.group("combined_video_id")
-        if video_id:
+        if video_id := self.match.group("video_id") or self.match.group(
+            "combined_video_id"
+        ):
             return video_id, "recorded"
 
         channel_id = self.match.group("channel_id") or self.match.group("combined_channel_id")
@@ -523,12 +524,17 @@ class UStreamTV(Plugin):
             password=self.get_option("password"),
         )
         log.debug(
-            "Connecting to UStream API: " + ", ".join([
-                f"media_id={media_id}",
-                f"application={application}",
-                f"referrer={self.url}",
-                f"cluster={'live'}",
-            ]),
+            (
+                "Connecting to UStream API: "
+                + ", ".join(
+                    [
+                        f"media_id={media_id}",
+                        f"application={application}",
+                        f"referrer={self.url}",
+                        'cluster=live',
+                    ]
+                )
+            )
         )
         wsclient.start()
 

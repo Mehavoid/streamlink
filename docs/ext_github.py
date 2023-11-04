@@ -37,8 +37,7 @@ class GithubReferences(Transform):
             new_nodes = []
             last_ref_end = 0
             for match in pattern.finditer(text):
-                head = text[last_ref_end:match.start()]
-                if head:
+                if head := text[last_ref_end : match.start()]:
                     new_nodes.append(nodes.Text(head))
 
                 last_ref_end = match.end()
@@ -53,8 +52,7 @@ class GithubReferences(Transform):
             if not new_nodes:
                 continue
 
-            tail = text[last_ref_end:]
-            if tail:
+            if tail := text[last_ref_end:]:
                 new_nodes.append(nodes.Text(tail))
 
             parent.replace(node, new_nodes)

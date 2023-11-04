@@ -131,23 +131,29 @@ class PluginArguments(ast.NodeVisitor, IDatalistItem):
             ):
                 continue
 
-            custom_name = next(
-                (kw.value.value for kw in decorator.keywords if kw.arg == "argument_name" and type(kw.value) is ast.Constant),
+            if custom_name := next(
+                (
+                    kw.value.value
+                    for kw in decorator.keywords
+                    if kw.arg == "argument_name" and type(kw.value) is ast.Constant
+                ),
                 None,
-            )
-            if custom_name:
+            ):
                 self.arguments.append(custom_name)
                 continue
 
-            name = next(
-                (kw.value.value for kw in decorator.keywords if kw.arg == "name" and type(kw.value) is ast.Constant),
+            if name := next(
+                (
+                    kw.value.value
+                    for kw in decorator.keywords
+                    if kw.arg == "name" and type(kw.value) is ast.Constant
+                ),
                 None,
             ) or (
                 decorator.args
                 and type(decorator.args[0]) is ast.Constant
                 and decorator.args[0].value
-            )
-            if name:
+            ):
                 self.arguments.append(f"{self.pluginname}-{name}")
 
 
@@ -204,8 +210,7 @@ class PluginFinder:
 
     def get_plugins(self):
         for pluginname, pluginfile in self.plugins:
-            pluginmetadata = self._parse_plugin(pluginname, pluginfile)
-            if pluginmetadata:
+            if pluginmetadata := self._parse_plugin(pluginname, pluginfile):
                 yield pluginmetadata
 
     def _parse_plugin(self, pluginname: str, pluginfile: Path) -> Optional[PluginMetadata]:

@@ -127,18 +127,19 @@ class PluginUrlTester:
         except Exception as err:
             raise ImportError(f"Could not load test module of plugin {self.pluginname}: {err}") from err
 
-        PluginCanHandleUrlSubclass: Optional[Type[PluginCanHandleUrl]] = next(
+        if PluginCanHandleUrlSubclass := next(
             (
                 item
                 for item in module.__dict__.values()
-                if type(item) is type and item is not PluginCanHandleUrl and issubclass(item, PluginCanHandleUrl)
+                if type(item) is type
+                and item is not PluginCanHandleUrl
+                and issubclass(item, PluginCanHandleUrl)
             ),
             None,
-        )
-        if not PluginCanHandleUrlSubclass:
+        ):
+            yield from PluginCanHandleUrlSubclass.urls_all()
+        else:
             raise RuntimeError("Could not find URL test class inheriting from PluginCanHandleURL")
-
-        yield from PluginCanHandleUrlSubclass.urls_all()
 
     def run(self) -> int:
         code = 0

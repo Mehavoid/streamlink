@@ -127,14 +127,15 @@ class CertificateSecurityState:
     certificate_network_error: typing.Optional[str] = None
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["protocol"] = self.protocol
-        json["keyExchange"] = self.key_exchange
-        json["cipher"] = self.cipher
-        json["certificate"] = list(self.certificate)
-        json["subjectName"] = self.subject_name
-        json["issuer"] = self.issuer
-        json["validFrom"] = self.valid_from.to_json()
+        json: T_JSON_DICT = {
+            "protocol": self.protocol,
+            "keyExchange": self.key_exchange,
+            "cipher": self.cipher,
+            "certificate": list(self.certificate),
+            "subjectName": self.subject_name,
+            "issuer": self.issuer,
+            "validFrom": self.valid_from.to_json(),
+        }
         json["validTo"] = self.valid_to.to_json()
         json["certificateHasWeakSignature"] = self.certificate_has_weak_signature
         json["certificateHasSha1Signature"] = self.certificate_has_sha1_signature
@@ -196,8 +197,7 @@ class SafetyTipInfo:
     safe_url: typing.Optional[str] = None
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["safetyTipStatus"] = self.safety_tip_status.to_json()
+        json: T_JSON_DICT = {"safetyTipStatus": self.safety_tip_status.to_json()}
         if self.safe_url is not None:
             json["safeUrl"] = self.safe_url
         return json
@@ -228,8 +228,7 @@ class VisibleSecurityState:
     safety_tip_info: typing.Optional[SafetyTipInfo] = None
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["securityState"] = self.security_state.to_json()
+        json: T_JSON_DICT = {"securityState": self.security_state.to_json()}
         json["securityStateIssueIds"] = list(self.security_state_issue_ids)
         if self.certificate_security_state is not None:
             json["certificateSecurityState"] = self.certificate_security_state.to_json()
@@ -274,8 +273,7 @@ class SecurityStateExplanation:
     recommendations: typing.Optional[typing.List[str]] = None
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["securityState"] = self.security_state.to_json()
+        json: T_JSON_DICT = {"securityState": self.security_state.to_json()}
         json["title"] = self.title
         json["summary"] = self.summary
         json["description"] = self.description
@@ -325,13 +323,14 @@ class InsecureContentStatus:
     displayed_insecure_content_style: SecurityState
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["ranMixedContent"] = self.ran_mixed_content
-        json["displayedMixedContent"] = self.displayed_mixed_content
-        json["containedMixedForm"] = self.contained_mixed_form
-        json["ranContentWithCertErrors"] = self.ran_content_with_cert_errors
-        json["displayedContentWithCertErrors"] = self.displayed_content_with_cert_errors
-        json["ranInsecureContentStyle"] = self.ran_insecure_content_style.to_json()
+        json: T_JSON_DICT = {
+            "ranMixedContent": self.ran_mixed_content,
+            "displayedMixedContent": self.displayed_mixed_content,
+            "containedMixedForm": self.contained_mixed_form,
+            "ranContentWithCertErrors": self.ran_content_with_cert_errors,
+            "displayedContentWithCertErrors": self.displayed_content_with_cert_errors,
+            "ranInsecureContentStyle": self.ran_insecure_content_style.to_json(),
+        }
         json["displayedInsecureContentStyle"] = self.displayed_insecure_content_style.to_json()
         return json
 
@@ -368,20 +367,18 @@ def disable() -> typing.Generator[T_JSON_DICT, T_JSON_DICT, None]:
     """
     Disables tracking security state changes.
     """
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Security.disable",
     }
-    yield cmd_dict
 
 
 def enable() -> typing.Generator[T_JSON_DICT, T_JSON_DICT, None]:
     """
     Enables tracking security state changes.
     """
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Security.enable",
     }
-    yield cmd_dict
 
 
 def set_ignore_certificate_errors(
@@ -394,13 +391,11 @@ def set_ignore_certificate_errors(
 
     :param ignore: If true, all certificate errors will be ignored.
     """
-    params: T_JSON_DICT = {}
-    params["ignore"] = ignore
-    cmd_dict: T_JSON_DICT = {
+    params: T_JSON_DICT = {"ignore": ignore}
+    yield {
         "method": "Security.setIgnoreCertificateErrors",
         "params": params,
     }
-    yield cmd_dict
 
 
 def handle_certificate_error(
@@ -413,14 +408,11 @@ def handle_certificate_error(
     :param event_id: The ID of the event.
     :param action: The action to take on the certificate error.
     """
-    params: T_JSON_DICT = {}
-    params["eventId"] = event_id
-    params["action"] = action.to_json()
-    cmd_dict: T_JSON_DICT = {
+    params: T_JSON_DICT = {"eventId": event_id, "action": action.to_json()}
+    yield {
         "method": "Security.handleCertificateError",
         "params": params,
     }
-    yield cmd_dict
 
 
 def set_override_certificate_errors(
@@ -432,13 +424,11 @@ def set_override_certificate_errors(
 
     :param override: If true, certificate errors will be overridden.
     """
-    params: T_JSON_DICT = {}
-    params["override"] = override
-    cmd_dict: T_JSON_DICT = {
+    params: T_JSON_DICT = {"override": override}
+    yield {
         "method": "Security.setOverrideCertificateErrors",
         "params": params,
     }
-    yield cmd_dict
 
 
 @event_class("Security.certificateError")

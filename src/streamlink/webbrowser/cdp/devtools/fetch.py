@@ -91,9 +91,7 @@ class HeaderEntry:
     value: str
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["name"] = self.name
-        json["value"] = self.value
+        json: T_JSON_DICT = {"name": self.name, "value": self.value}
         return json
 
     @classmethod
@@ -122,10 +120,11 @@ class AuthChallenge:
     source: typing.Optional[str] = None
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["origin"] = self.origin
-        json["scheme"] = self.scheme
-        json["realm"] = self.realm
+        json: T_JSON_DICT = {
+            "origin": self.origin,
+            "scheme": self.scheme,
+            "realm": self.realm,
+        }
         if self.source is not None:
             json["source"] = self.source
         return json
@@ -159,8 +158,7 @@ class AuthChallengeResponse:
     password: typing.Optional[str] = None
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["response"] = self.response
+        json: T_JSON_DICT = {"response": self.response}
         if self.username is not None:
             json["username"] = self.username
         if self.password is not None:
@@ -180,10 +178,9 @@ def disable() -> typing.Generator[T_JSON_DICT, T_JSON_DICT, None]:
     """
     Disables the fetch domain.
     """
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Fetch.disable",
     }
-    yield cmd_dict
 
 
 def enable(
@@ -202,11 +199,10 @@ def enable(
         params["patterns"] = [i.to_json() for i in patterns]
     if handle_auth_requests is not None:
         params["handleAuthRequests"] = handle_auth_requests
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Fetch.enable",
         "params": params,
     }
-    yield cmd_dict
 
 
 def fail_request(
@@ -219,14 +215,12 @@ def fail_request(
     :param request_id: An id the client received in requestPaused event.
     :param error_reason: Causes the request to fail with the given reason.
     """
-    params: T_JSON_DICT = {}
-    params["requestId"] = request_id.to_json()
+    params: T_JSON_DICT = {"requestId": request_id.to_json()}
     params["errorReason"] = error_reason.to_json()
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Fetch.failRequest",
         "params": params,
     }
-    yield cmd_dict
 
 
 def fulfill_request(
@@ -247,9 +241,10 @@ def fulfill_request(
     :param body: *(Optional)* A response body. If absent, original response body will be used if the request is intercepted at the response stage and empty body will be used if the request is intercepted at the request stage. (Encoded as a base64 string when passed over JSON)
     :param response_phrase: *(Optional)* A textual representation of responseCode. If absent, a standard phrase matching responseCode is used.
     """
-    params: T_JSON_DICT = {}
-    params["requestId"] = request_id.to_json()
-    params["responseCode"] = response_code
+    params: T_JSON_DICT = {
+        "requestId": request_id.to_json(),
+        "responseCode": response_code,
+    }
     if response_headers is not None:
         params["responseHeaders"] = [i.to_json() for i in response_headers]
     if binary_response_headers is not None:
@@ -258,11 +253,10 @@ def fulfill_request(
         params["body"] = body
     if response_phrase is not None:
         params["responsePhrase"] = response_phrase
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Fetch.fulfillRequest",
         "params": params,
     }
-    yield cmd_dict
 
 
 def continue_request(
@@ -283,8 +277,7 @@ def continue_request(
     :param headers: *(Optional)* If set, overrides the request headers. Note that the overrides do not extend to subsequent redirect hops, if a redirect happens. Another override may be applied to a different request produced by a redirect.
     :param intercept_response: **(EXPERIMENTAL)** *(Optional)* If set, overrides response interception behavior for this request.
     """
-    params: T_JSON_DICT = {}
-    params["requestId"] = request_id.to_json()
+    params: T_JSON_DICT = {"requestId": request_id.to_json()}
     if url is not None:
         params["url"] = url
     if method is not None:
@@ -295,11 +288,10 @@ def continue_request(
         params["headers"] = [i.to_json() for i in headers]
     if intercept_response is not None:
         params["interceptResponse"] = intercept_response
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Fetch.continueRequest",
         "params": params,
     }
-    yield cmd_dict
 
 
 def continue_with_auth(
@@ -312,14 +304,12 @@ def continue_with_auth(
     :param request_id: An id the client received in authRequired event.
     :param auth_challenge_response: Response to  with an authChallenge.
     """
-    params: T_JSON_DICT = {}
-    params["requestId"] = request_id.to_json()
+    params: T_JSON_DICT = {"requestId": request_id.to_json()}
     params["authChallengeResponse"] = auth_challenge_response.to_json()
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Fetch.continueWithAuth",
         "params": params,
     }
-    yield cmd_dict
 
 
 def continue_response(
@@ -342,8 +332,7 @@ def continue_response(
     :param response_headers: *(Optional)* Response headers. If absent, original response headers will be used.
     :param binary_response_headers: *(Optional)* Alternative way of specifying response headers as a \0-separated series of name: value pairs. Prefer the above method unless you need to represent some non-UTF8 values that can't be transmitted over the protocol as text. (Encoded as a base64 string when passed over JSON)
     """
-    params: T_JSON_DICT = {}
-    params["requestId"] = request_id.to_json()
+    params: T_JSON_DICT = {"requestId": request_id.to_json()}
     if response_code is not None:
         params["responseCode"] = response_code
     if response_phrase is not None:
@@ -352,11 +341,10 @@ def continue_response(
         params["responseHeaders"] = [i.to_json() for i in response_headers]
     if binary_response_headers is not None:
         params["binaryResponseHeaders"] = binary_response_headers
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Fetch.continueResponse",
         "params": params,
     }
-    yield cmd_dict
 
 
 def get_response_body(
@@ -376,8 +364,7 @@ def get_response_body(
         0. **body** - Response body.
         1. **base64Encoded** - True, if content was sent as base64.
     """
-    params: T_JSON_DICT = {}
-    params["requestId"] = request_id.to_json()
+    params: T_JSON_DICT = {"requestId": request_id.to_json()}
     cmd_dict: T_JSON_DICT = {
         "method": "Fetch.getResponseBody",
         "params": params,
@@ -407,8 +394,7 @@ def take_response_body_as_stream(
     :param request_id:
     :returns:
     """
-    params: T_JSON_DICT = {}
-    params["requestId"] = request_id.to_json()
+    params: T_JSON_DICT = {"requestId": request_id.to_json()}
     cmd_dict: T_JSON_DICT = {
         "method": "Fetch.takeResponseBodyAsStream",
         "params": params,

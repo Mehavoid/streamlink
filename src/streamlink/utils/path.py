@@ -12,8 +12,7 @@ def resolve_executable(
         return which(custom)
 
     for item in (names or []) + (fallbacks or []):
-        executable = which(item)
-        if executable:
+        if executable := which(item):
             return executable
 
     return None

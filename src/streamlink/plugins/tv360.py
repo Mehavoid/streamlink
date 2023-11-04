@@ -16,12 +16,16 @@ from streamlink.stream.hls import HLSStream
 ))
 class TV360(Plugin):
     def _get_streams(self):
-        hls_url = self.session.http.get(self.url, schema=validate.Schema(
-            validate.parse_html(),
-            validate.xml_xpath_string(".//video/source[@src][@type='application/x-mpegURL'][1]/@src"),
-            validate.none_or_all(validate.url()),
-        ))
-        if hls_url:
+        if hls_url := self.session.http.get(
+            self.url,
+            schema=validate.Schema(
+                validate.parse_html(),
+                validate.xml_xpath_string(
+                    ".//video/source[@src][@type='application/x-mpegURL'][1]/@src"
+                ),
+                validate.none_or_all(validate.url()),
+            ),
+        ):
             return HLSStream.parse_variant_playlist(self.session, hls_url)
 
 

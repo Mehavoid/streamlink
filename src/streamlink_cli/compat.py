@@ -6,12 +6,7 @@ from typing import TYPE_CHECKING, BinaryIO
 stdout: BinaryIO = sys.stdout.buffer
 
 
-if TYPE_CHECKING:  # pragma: no cover
-    _BasePath = Path
-else:
-    _BasePath = type(Path())
-
-
+_BasePath = Path if TYPE_CHECKING else type(Path())
 class DeprecatedPath(_BasePath):
     pass
 

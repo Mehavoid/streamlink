@@ -511,9 +511,11 @@ def format_valid_streams(plugin: Plugin, streams: Dict[str, Stream]) -> str:
         if name in STREAM_SYNONYMS:
             continue
 
-        synonyms = [key for key, value in streams.items() if stream is value and key != name]
-
-        if synonyms:
+        if synonyms := [
+            key
+            for key, value in streams.items()
+            if stream is value and key != name
+        ]:
             joined = delimiter.join(synonyms)
             name = f"{name} ({joined})"
 
@@ -540,12 +542,10 @@ def handle_url():
         log.info(f"Found matching plugin {pluginname} for URL {args.url}")
 
         if args.retry_max or args.retry_streams:
-            retry_streams = 1
             retry_max = 0
-            if args.retry_streams:
-                retry_streams = args.retry_streams
             if args.retry_max:
                 retry_max = args.retry_max
+            retry_streams = args.retry_streams if args.retry_streams else 1
             streams = fetch_streams_with_retry(plugin, retry_streams, retry_max)
         else:
             streams = fetch_streams(plugin)
@@ -598,11 +598,11 @@ def print_plugins():
     """Outputs a list of all plugins Streamlink has loaded."""
 
     pluginlist = list(streamlink.get_plugins().keys())
-    pluginlist_formatted = ", ".join(sorted(pluginlist))
-
     if args.json:
         console.msg_json(pluginlist)
     else:
+        pluginlist_formatted = ", ".join(sorted(pluginlist))
+
         console.msg(f"Loaded plugins: {pluginlist_formatted}")
 
 
@@ -858,7 +858,6 @@ def setup_logger_and_console(stream=sys.stdout, filename=None, level="info", jso
 
 
 def main():
-    error_code = 0
     parser = build_parser()
 
     setup_args(parser, ignore_unknown=True)
@@ -898,6 +897,7 @@ def main():
 
     setup_signals()
 
+    error_code = 0
     if args.version_check or args.auto_version_check:
         try:
             check_version(force=args.version_check)
@@ -943,8 +943,7 @@ def main():
     else:
         usage = parser.format_usage()
         console.msg(
-            f"{usage}\n"
-            + "Use -h/--help to see the available options or read the manual at https://streamlink.github.io",
+            f"{usage}\nUse -h/--help to see the available options or read the manual at https://streamlink.github.io"
         )
 
     sys.exit(error_code)

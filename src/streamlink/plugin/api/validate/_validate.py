@@ -251,10 +251,7 @@ def _validate_getitemschema(schema: GetItemSchema, value):
     key = None
     try:
         for key in item:
-            if iselement(value):
-                value = value.attrib[key]
-            else:
-                value = value[key]
+            value = value.attrib[key] if iselement(value) else value[key]
             idx += 1
         return value
     except (KeyError, IndexError):

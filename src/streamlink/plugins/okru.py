@@ -40,8 +40,7 @@ class OKru(Plugin):
 
     @classmethod
     def stream_weight(cls, key):
-        weight = cls.QUALITY_WEIGHTS.get(key)
-        if weight:
+        if weight := cls.QUALITY_WEIGHTS.get(key):
             return weight, "okru"
 
         return super().stream_weight(key)
@@ -67,15 +66,14 @@ class OKru(Plugin):
 
         self.id, self.title, url = data
 
-        stream_url = self.session.http.head(url).headers.get("Location")
-        if not stream_url:
+        if stream_url := self.session.http.head(url).headers.get("Location"):
+            return (
+                HLSStream.parse_variant_playlist(self.session, stream_url)
+                if urlparse(stream_url).path.endswith(".m3u8") else
+                {"vod": HTTPStream(self.session, stream_url)}
+            )
+        else:
             return
-
-        return (
-            HLSStream.parse_variant_playlist(self.session, stream_url)
-            if urlparse(stream_url).path.endswith(".m3u8") else
-            {"vod": HTTPStream(self.session, stream_url)}
-        )
 
     def _get_streams_default(self):
         schema_metadata = validate.Schema(

@@ -37,10 +37,12 @@ class TV999(Plugin):
         iframe_url = self._get_xpath_string(self.url, ".//iframe[@src]/@src")
         if not iframe_url:
             return
-        hls_url = self._get_xpath_string(iframe_url, ".//source[contains(@src,'m3u8')]/@src")
-        if not hls_url:
+        if hls_url := self._get_xpath_string(
+            iframe_url, ".//source[contains(@src,'m3u8')]/@src"
+        ):
+            return {"live": HLSStream(self.session, update_scheme("http://", hls_url))}
+        else:
             return
-        return {"live": HLSStream(self.session, update_scheme("http://", hls_url))}
 
 
 __plugin__ = TV999

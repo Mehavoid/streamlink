@@ -204,8 +204,7 @@ class TLSNoDHAdapter(HTTPAdapter):
     def init_poolmanager(self, *args, **kwargs):
         ctx = create_urllib3_context()
         ctx.load_default_certs()
-        ciphers = ":".join(cipher.get("name") for cipher in ctx.get_ciphers())
-        ciphers += ":!DH"
+        ciphers = ":".join(cipher.get("name") for cipher in ctx.get_ciphers()) + ":!DH"
         ctx.set_ciphers(ciphers)
         kwargs["ssl_context"] = ctx
         return super().init_poolmanager(*args, **kwargs)

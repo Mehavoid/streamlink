@@ -149,10 +149,7 @@ class SVTPlay(Plugin):
                 return {q: MuxedStream(self.session, s, subtitles=subtitlestreams) for q, s in dash_streams.items()}
 
     def _get_streams(self):
-        if self.match["live"]:
-            return self._get_live()
-        else:
-            return self._get_vod()
+        return self._get_live() if self.match["live"] else self._get_vod()
 
 
 __plugin__ = SVTPlay

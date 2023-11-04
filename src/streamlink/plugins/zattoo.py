@@ -199,10 +199,10 @@ class Zattoo(Plugin):
         params = {"https_watch_urls": True}
         if channel:
             watch_url = f"{self.base_url}/zapi/watch"
-            params_cid = self._get_params_cid(channel)
-            if not params_cid:
+            if params_cid := self._get_params_cid(channel):
+                params.update(params_cid)
+            else:
                 return
-            params.update(params_cid)
         elif vod_id:
             log.debug("Found vod_id: {0}".format(vod_id))
             watch_url = f"{self.base_url}/zapi/avod/videos/{vod_id}/watch"
@@ -333,12 +333,12 @@ class Zattoo(Plugin):
         elif (self._authed and not self._session_control):
             # check every two hours, if the session is actually valid
             log.debug("Session control for {0}".format(self.domain))
-            active = self.session.http.get(
+            if active := self.session.http.get(
                 f"{self.base_url}/zapi/v3/session",
-                schema=validate.Schema(validate.parse_json(),
-                                       {"active": bool}, validate.get("active")),
-            )
-            if active:
+                schema=validate.Schema(
+                    validate.parse_json(), {"active": bool}, validate.get("active")
+                ),
+            ):
                 self._session_attributes.set(
                     "session_control", True, expires=self.TIME_CONTROL)
                 log.debug("User is logged in")

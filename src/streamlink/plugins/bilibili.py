@@ -74,8 +74,8 @@ class Bilibili(Plugin):
         if not room:
             return
 
+        name = "source"
         for stream_list in room["durl"]:
-            name = "source"
             url = stream_list["url"]
             # check if the URL is available
             log.trace("URL={0}".format(url))

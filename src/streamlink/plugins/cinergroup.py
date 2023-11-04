@@ -60,9 +60,14 @@ class CinerGroup(Plugin):
     def _get_streams(self):
         root = self.session.http.get(self.url, schema=validate.Schema(validate.parse_html()))
         schema_getters = self._schema_videourl, self._schema_data_ht
-        stream_url = next((res for res in (getter().validate(root) for getter in schema_getters) if res), None)
-
-        if stream_url:
+        if stream_url := next(
+            (
+                res
+                for res in (getter().validate(root) for getter in schema_getters)
+                if res
+            ),
+            None,
+        ):
             return HLSStream.parse_variant_playlist(self.session, stream_url)
 
 

@@ -33,8 +33,7 @@ class Bigo(Plugin):
             headers={"User-Agent": useragents.IPHONE_6},
         )
         data = self.session.http.json(res, schema=self._video_info_schema)
-        videourl = data["data"]["videoSrc"]
-        if videourl:
+        if videourl := data["data"]["videoSrc"]:
             yield "live", HLSStream(self.session, videourl)
 
 

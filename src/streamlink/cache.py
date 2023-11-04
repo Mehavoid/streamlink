@@ -114,10 +114,7 @@ class Cache:
             self._save()
 
         for key, value in self._cache.items():
-            if self.key_prefix:
-                prefix = f"{self.key_prefix}:"
-            else:
-                prefix = ""
+            prefix = f"{self.key_prefix}:" if self.key_prefix else ""
             if key.startswith(prefix):
                 okey = key[len(prefix):]
                 ret[okey] = value["value"]

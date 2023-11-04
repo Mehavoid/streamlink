@@ -28,8 +28,7 @@ class CMMedia(Plugin):
         for k, v in items.items():
             log.debug(f"{k}: {v}")
 
-        restrictions = [k for k, v in items.items() if v]
-        if restrictions:
+        if restrictions := [k for k, v in items.items() if v]:
             log.error(f"This site is restricted: ({', '.join(restrictions)})")
             return True
 

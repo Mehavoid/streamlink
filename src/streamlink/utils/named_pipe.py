@@ -11,12 +11,8 @@ from typing import Type
 from streamlink.compat import is_win32
 
 
-try:
+with suppress(ImportError):
     from ctypes import byref, c_ulong, c_void_p, cast, windll  # type: ignore[attr-defined]
-except ImportError:
-    pass
-
-
 log = logging.getLogger(__name__)
 
 _lock = threading.Lock()
@@ -135,7 +131,4 @@ class NamedPipeWindows(NamedPipeBase):
 
 
 NamedPipe: Type[NamedPipeBase]
-if not is_win32:
-    NamedPipe = NamedPipePosix
-else:
-    NamedPipe = NamedPipeWindows
+NamedPipe = NamedPipePosix if not is_win32 else NamedPipeWindows

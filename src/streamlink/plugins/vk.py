@@ -119,12 +119,10 @@ class VK(Plugin):
         self.author = data.get("md_author")
         self.title = data.get("md_title")
 
-        hls = data.get("hls")
-        if hls:
+        if hls := data.get("hls"):
             return HLSStream.parse_variant_playlist(self.session, hls)
 
-        dash_manifest = data.get("manifest")
-        if dash_manifest:
+        if dash_manifest := data.get("manifest"):
             return DASHStream.parse_manifest(self.session, dash_manifest)
 
 

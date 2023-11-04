@@ -30,9 +30,7 @@ class ScreenOrientation:
     angle: int
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["type"] = self.type_
-        json["angle"] = self.angle
+        json: T_JSON_DICT = {"type": self.type_, "angle": self.angle}
         return json
 
     @classmethod
@@ -58,10 +56,11 @@ class DisplayFeature:
     mask_length: int
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["orientation"] = self.orientation
-        json["offset"] = self.offset
-        json["maskLength"] = self.mask_length
+        json: T_JSON_DICT = {
+            "orientation": self.orientation,
+            "offset": self.offset,
+            "maskLength": self.mask_length,
+        }
         return json
 
     @classmethod
@@ -80,9 +79,7 @@ class MediaFeature:
     value: str
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["name"] = self.name
-        json["value"] = self.value
+        json: T_JSON_DICT = {"name": self.name, "value": self.value}
         return json
 
     @classmethod
@@ -122,9 +119,7 @@ class UserAgentBrandVersion:
     version: str
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["brand"] = self.brand
-        json["version"] = self.version
+        json: T_JSON_DICT = {"brand": self.brand, "version": self.version}
         return json
 
     @classmethod
@@ -164,12 +159,13 @@ class UserAgentMetadata:
     wow64: typing.Optional[bool] = None
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["platform"] = self.platform
-        json["platformVersion"] = self.platform_version
-        json["architecture"] = self.architecture
-        json["model"] = self.model
-        json["mobile"] = self.mobile
+        json: T_JSON_DICT = {
+            "platform": self.platform,
+            "platformVersion": self.platform_version,
+            "architecture": self.architecture,
+            "model": self.model,
+            "mobile": self.mobile,
+        }
         if self.brands is not None:
             json["brands"] = [i.to_json() for i in self.brands]
         if self.full_version_list is not None:
@@ -230,20 +226,18 @@ def clear_device_metrics_override() -> typing.Generator[T_JSON_DICT, T_JSON_DICT
     """
     Clears the overridden device metrics.
     """
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Emulation.clearDeviceMetricsOverride",
     }
-    yield cmd_dict
 
 
 def clear_geolocation_override() -> typing.Generator[T_JSON_DICT, T_JSON_DICT, None]:
     """
     Clears the overridden Geolocation Position and Error.
     """
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Emulation.clearGeolocationOverride",
     }
-    yield cmd_dict
 
 
 def reset_page_scale_factor() -> typing.Generator[T_JSON_DICT, T_JSON_DICT, None]:
@@ -252,10 +246,9 @@ def reset_page_scale_factor() -> typing.Generator[T_JSON_DICT, T_JSON_DICT, None
 
     **EXPERIMENTAL**
     """
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Emulation.resetPageScaleFactor",
     }
-    yield cmd_dict
 
 
 def set_focus_emulation_enabled(
@@ -268,13 +261,11 @@ def set_focus_emulation_enabled(
 
     :param enabled: Whether to enable to disable focus emulation.
     """
-    params: T_JSON_DICT = {}
-    params["enabled"] = enabled
-    cmd_dict: T_JSON_DICT = {
+    params: T_JSON_DICT = {"enabled": enabled}
+    yield {
         "method": "Emulation.setFocusEmulationEnabled",
         "params": params,
     }
-    yield cmd_dict
 
 
 def set_auto_dark_mode_override(
@@ -290,11 +281,10 @@ def set_auto_dark_mode_override(
     params: T_JSON_DICT = {}
     if enabled is not None:
         params["enabled"] = enabled
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Emulation.setAutoDarkModeOverride",
         "params": params,
     }
-    yield cmd_dict
 
 
 def set_cpu_throttling_rate(
@@ -307,13 +297,11 @@ def set_cpu_throttling_rate(
 
     :param rate: Throttling rate as a slowdown factor (1 is no throttle, 2 is 2x slowdown, etc).
     """
-    params: T_JSON_DICT = {}
-    params["rate"] = rate
-    cmd_dict: T_JSON_DICT = {
+    params: T_JSON_DICT = {"rate": rate}
+    yield {
         "method": "Emulation.setCPUThrottlingRate",
         "params": params,
     }
-    yield cmd_dict
 
 
 def set_default_background_color_override(
@@ -328,11 +316,10 @@ def set_default_background_color_override(
     params: T_JSON_DICT = {}
     if color is not None:
         params["color"] = color.to_json()
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Emulation.setDefaultBackgroundColorOverride",
         "params": params,
     }
-    yield cmd_dict
 
 
 def set_device_metrics_override(
@@ -369,11 +356,12 @@ def set_device_metrics_override(
     :param viewport: **(EXPERIMENTAL)** *(Optional)* If set, the visible area of the page will be overridden to this viewport. This viewport change is not observed by the page, e.g. viewport-relative elements do not change positions.
     :param display_feature: **(EXPERIMENTAL)** *(Optional)* If set, the display feature of a multi-segment screen. If not set, multi-segment support is turned-off.
     """
-    params: T_JSON_DICT = {}
-    params["width"] = width
-    params["height"] = height
-    params["deviceScaleFactor"] = device_scale_factor
-    params["mobile"] = mobile
+    params: T_JSON_DICT = {
+        "width": width,
+        "height": height,
+        "deviceScaleFactor": device_scale_factor,
+        "mobile": mobile,
+    }
     if scale is not None:
         params["scale"] = scale
     if screen_width is not None:
@@ -392,11 +380,10 @@ def set_device_metrics_override(
         params["viewport"] = viewport.to_json()
     if display_feature is not None:
         params["displayFeature"] = display_feature.to_json()
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Emulation.setDeviceMetricsOverride",
         "params": params,
     }
-    yield cmd_dict
 
 
 def set_scrollbars_hidden(
@@ -409,13 +396,11 @@ def set_scrollbars_hidden(
 
     :param hidden: Whether scrollbars should be always hidden.
     """
-    params: T_JSON_DICT = {}
-    params["hidden"] = hidden
-    cmd_dict: T_JSON_DICT = {
+    params: T_JSON_DICT = {"hidden": hidden}
+    yield {
         "method": "Emulation.setScrollbarsHidden",
         "params": params,
     }
-    yield cmd_dict
 
 
 def set_document_cookie_disabled(
@@ -428,13 +413,11 @@ def set_document_cookie_disabled(
 
     :param disabled: Whether document.coookie API should be disabled.
     """
-    params: T_JSON_DICT = {}
-    params["disabled"] = disabled
-    cmd_dict: T_JSON_DICT = {
+    params: T_JSON_DICT = {"disabled": disabled}
+    yield {
         "method": "Emulation.setDocumentCookieDisabled",
         "params": params,
     }
-    yield cmd_dict
 
 
 def set_emit_touch_events_for_mouse(
@@ -449,15 +432,13 @@ def set_emit_touch_events_for_mouse(
     :param enabled: Whether touch emulation based on mouse input should be enabled.
     :param configuration: *(Optional)* Touch/gesture events configuration. Default: current platform.
     """
-    params: T_JSON_DICT = {}
-    params["enabled"] = enabled
+    params: T_JSON_DICT = {"enabled": enabled}
     if configuration is not None:
         params["configuration"] = configuration
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Emulation.setEmitTouchEventsForMouse",
         "params": params,
     }
-    yield cmd_dict
 
 
 def set_emulated_media(
@@ -475,11 +456,10 @@ def set_emulated_media(
         params["media"] = media
     if features is not None:
         params["features"] = [i.to_json() for i in features]
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Emulation.setEmulatedMedia",
         "params": params,
     }
-    yield cmd_dict
 
 
 def set_emulated_vision_deficiency(
@@ -492,13 +472,11 @@ def set_emulated_vision_deficiency(
 
     :param type_: Vision deficiency to emulate. Order: best-effort emulations come first, followed by any physiologically accurate emulations for medically recognized color vision deficiencies.
     """
-    params: T_JSON_DICT = {}
-    params["type"] = type_
-    cmd_dict: T_JSON_DICT = {
+    params: T_JSON_DICT = {"type": type_}
+    yield {
         "method": "Emulation.setEmulatedVisionDeficiency",
         "params": params,
     }
-    yield cmd_dict
 
 
 def set_geolocation_override(
@@ -521,11 +499,10 @@ def set_geolocation_override(
         params["longitude"] = longitude
     if accuracy is not None:
         params["accuracy"] = accuracy
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Emulation.setGeolocationOverride",
         "params": params,
     }
-    yield cmd_dict
 
 
 def set_idle_override(
@@ -540,14 +517,14 @@ def set_idle_override(
     :param is_user_active: Mock isUserActive
     :param is_screen_unlocked: Mock isScreenUnlocked
     """
-    params: T_JSON_DICT = {}
-    params["isUserActive"] = is_user_active
-    params["isScreenUnlocked"] = is_screen_unlocked
-    cmd_dict: T_JSON_DICT = {
+    params: T_JSON_DICT = {
+        "isUserActive": is_user_active,
+        "isScreenUnlocked": is_screen_unlocked,
+    }
+    yield {
         "method": "Emulation.setIdleOverride",
         "params": params,
     }
-    yield cmd_dict
 
 
 def clear_idle_override() -> typing.Generator[T_JSON_DICT, T_JSON_DICT, None]:
@@ -556,10 +533,9 @@ def clear_idle_override() -> typing.Generator[T_JSON_DICT, T_JSON_DICT, None]:
 
     **EXPERIMENTAL**
     """
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Emulation.clearIdleOverride",
     }
-    yield cmd_dict
 
 
 def set_navigator_overrides(
@@ -572,13 +548,11 @@ def set_navigator_overrides(
 
     :param platform: The platform navigator.platform should return.
     """
-    params: T_JSON_DICT = {}
-    params["platform"] = platform
-    cmd_dict: T_JSON_DICT = {
+    params: T_JSON_DICT = {"platform": platform}
+    yield {
         "method": "Emulation.setNavigatorOverrides",
         "params": params,
     }
-    yield cmd_dict
 
 
 def set_page_scale_factor(
@@ -591,13 +565,11 @@ def set_page_scale_factor(
 
     :param page_scale_factor: Page scale factor.
     """
-    params: T_JSON_DICT = {}
-    params["pageScaleFactor"] = page_scale_factor
-    cmd_dict: T_JSON_DICT = {
+    params: T_JSON_DICT = {"pageScaleFactor": page_scale_factor}
+    yield {
         "method": "Emulation.setPageScaleFactor",
         "params": params,
     }
-    yield cmd_dict
 
 
 def set_script_execution_disabled(
@@ -608,13 +580,11 @@ def set_script_execution_disabled(
 
     :param value: Whether script execution should be disabled in the page.
     """
-    params: T_JSON_DICT = {}
-    params["value"] = value
-    cmd_dict: T_JSON_DICT = {
+    params: T_JSON_DICT = {"value": value}
+    yield {
         "method": "Emulation.setScriptExecutionDisabled",
         "params": params,
     }
-    yield cmd_dict
 
 
 def set_touch_emulation_enabled(
@@ -627,15 +597,13 @@ def set_touch_emulation_enabled(
     :param enabled: Whether the touch event emulation should be enabled.
     :param max_touch_points: *(Optional)* Maximum touch points supported. Defaults to one.
     """
-    params: T_JSON_DICT = {}
-    params["enabled"] = enabled
+    params: T_JSON_DICT = {"enabled": enabled}
     if max_touch_points is not None:
         params["maxTouchPoints"] = max_touch_points
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Emulation.setTouchEmulationEnabled",
         "params": params,
     }
-    yield cmd_dict
 
 
 def set_virtual_time_policy(
@@ -656,8 +624,7 @@ def set_virtual_time_policy(
     :param initial_virtual_time: *(Optional)* If set, base::Time::Now will be overridden to initially return this value.
     :returns: Absolute timestamp at which virtual time was first enabled (up time in milliseconds).
     """
-    params: T_JSON_DICT = {}
-    params["policy"] = policy.to_json()
+    params: T_JSON_DICT = {"policy": policy.to_json()}
     if budget is not None:
         params["budget"] = budget
     if max_virtual_time_task_starvation_count is not None:
@@ -685,11 +652,10 @@ def set_locale_override(
     params: T_JSON_DICT = {}
     if locale is not None:
         params["locale"] = locale
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Emulation.setLocaleOverride",
         "params": params,
     }
-    yield cmd_dict
 
 
 def set_timezone_override(
@@ -702,13 +668,11 @@ def set_timezone_override(
 
     :param timezone_id: The timezone identifier. If empty, disables the override and restores default host system timezone.
     """
-    params: T_JSON_DICT = {}
-    params["timezoneId"] = timezone_id
-    cmd_dict: T_JSON_DICT = {
+    params: T_JSON_DICT = {"timezoneId": timezone_id}
+    yield {
         "method": "Emulation.setTimezoneOverride",
         "params": params,
     }
-    yield cmd_dict
 
 
 def set_visible_size(
@@ -725,14 +689,11 @@ def set_visible_size(
     :param width: Frame width (DIP).
     :param height: Frame height (DIP).
     """
-    params: T_JSON_DICT = {}
-    params["width"] = width
-    params["height"] = height
-    cmd_dict: T_JSON_DICT = {
+    params: T_JSON_DICT = {"width": width, "height": height}
+    yield {
         "method": "Emulation.setVisibleSize",
         "params": params,
     }
-    yield cmd_dict
 
 
 def set_disabled_image_types(
@@ -745,13 +706,11 @@ def set_disabled_image_types(
 
     :param image_types: Image types to disable.
     """
-    params: T_JSON_DICT = {}
-    params["imageTypes"] = [i.to_json() for i in image_types]
-    cmd_dict: T_JSON_DICT = {
+    params: T_JSON_DICT = {"imageTypes": [i.to_json() for i in image_types]}
+    yield {
         "method": "Emulation.setDisabledImageTypes",
         "params": params,
     }
-    yield cmd_dict
 
 
 def set_hardware_concurrency_override(
@@ -764,13 +723,11 @@ def set_hardware_concurrency_override(
 
     :param hardware_concurrency: Hardware concurrency to report
     """
-    params: T_JSON_DICT = {}
-    params["hardwareConcurrency"] = hardware_concurrency
-    cmd_dict: T_JSON_DICT = {
+    params: T_JSON_DICT = {"hardwareConcurrency": hardware_concurrency}
+    yield {
         "method": "Emulation.setHardwareConcurrencyOverride",
         "params": params,
     }
-    yield cmd_dict
 
 
 def set_user_agent_override(
@@ -787,19 +744,17 @@ def set_user_agent_override(
     :param platform: *(Optional)* The platform navigator.platform should return.
     :param user_agent_metadata: **(EXPERIMENTAL)** *(Optional)* To be sent in Sec-CH-UA-* headers and returned in navigator.userAgentData
     """
-    params: T_JSON_DICT = {}
-    params["userAgent"] = user_agent
+    params: T_JSON_DICT = {"userAgent": user_agent}
     if accept_language is not None:
         params["acceptLanguage"] = accept_language
     if platform is not None:
         params["platform"] = platform
     if user_agent_metadata is not None:
         params["userAgentMetadata"] = user_agent_metadata.to_json()
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Emulation.setUserAgentOverride",
         "params": params,
     }
-    yield cmd_dict
 
 
 def set_automation_override(
@@ -812,13 +767,11 @@ def set_automation_override(
 
     :param enabled: Whether the override should be enabled.
     """
-    params: T_JSON_DICT = {}
-    params["enabled"] = enabled
-    cmd_dict: T_JSON_DICT = {
+    params: T_JSON_DICT = {"enabled": enabled}
+    yield {
         "method": "Emulation.setAutomationOverride",
         "params": params,
     }
-    yield cmd_dict
 
 
 @event_class("Emulation.virtualTimeBudgetExpired")

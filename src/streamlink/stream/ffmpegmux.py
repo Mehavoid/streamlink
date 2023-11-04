@@ -277,10 +277,9 @@ class FFmpegVersionOutput(ProcessOutput):
     def onstdout(self, idx: int, line: str) -> Optional[bool]:
         # only validate the very first line of the stdout stream
         if idx == 0:
-            match = self._re_version.match(line)
-            # abort if the very first line of stdout doesn't match the expected format
-            if not match:
-                return False
-            self.version = match["version"]
+            if match := self._re_version.match(line):
+                self.version = match["version"]
 
+            else:
+                return False
         self.output.append(line)

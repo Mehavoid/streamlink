@@ -62,10 +62,11 @@ class BackendNode:
     backend_node_id: BackendNodeId
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["nodeType"] = self.node_type
-        json["nodeName"] = self.node_name
-        json["backendNodeId"] = self.backend_node_id.to_json()
+        json: T_JSON_DICT = {
+            "nodeType": self.node_type,
+            "nodeName": self.node_name,
+            "backendNodeId": self.backend_node_id.to_json(),
+        }
         return json
 
     @classmethod
@@ -282,8 +283,7 @@ class Node:
     assigned_slot: typing.Optional[BackendNode] = None
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["nodeId"] = self.node_id.to_json()
+        json: T_JSON_DICT = {"nodeId": self.node_id.to_json()}
         json["backendNodeId"] = self.backend_node_id.to_json()
         json["nodeType"] = self.node_type
         json["nodeName"] = self.node_name
@@ -396,10 +396,7 @@ class RGBA:
     a: typing.Optional[float] = None
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["r"] = self.r
-        json["g"] = self.g
-        json["b"] = self.b
+        json: T_JSON_DICT = {"r": self.r, "g": self.g, "b": self.b}
         if self.a is not None:
             json["a"] = self.a
         return json
@@ -456,8 +453,7 @@ class BoxModel:
     shape_outside: typing.Optional[ShapeOutsideInfo] = None
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["content"] = self.content.to_json()
+        json: T_JSON_DICT = {"content": self.content.to_json()}
         json["padding"] = self.padding.to_json()
         json["border"] = self.border.to_json()
         json["margin"] = self.margin.to_json()
@@ -495,8 +491,7 @@ class ShapeOutsideInfo:
     margin_shape: typing.List[typing.Any]
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["bounds"] = self.bounds.to_json()
+        json: T_JSON_DICT = {"bounds": self.bounds.to_json()}
         json["shape"] = list(self.shape)
         json["marginShape"] = list(self.margin_shape)
         return json
@@ -528,11 +523,12 @@ class Rect:
     height: float
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["x"] = self.x
-        json["y"] = self.y
-        json["width"] = self.width
-        json["height"] = self.height
+        json: T_JSON_DICT = {
+            "x": self.x,
+            "y": self.y,
+            "width": self.width,
+            "height": self.height,
+        }
         return json
 
     @classmethod
@@ -554,9 +550,7 @@ class CSSComputedStyleProperty:
     value: str
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["name"] = self.name
-        json["value"] = self.value
+        json: T_JSON_DICT = {"name": self.name, "value": self.value}
         return json
 
     @classmethod
@@ -578,8 +572,7 @@ def collect_class_names_from_subtree(
     :param node_id: Id of the node to collect class names.
     :returns: Class name list.
     """
-    params: T_JSON_DICT = {}
-    params["nodeId"] = node_id.to_json()
+    params: T_JSON_DICT = {"nodeId": node_id.to_json()}
     cmd_dict: T_JSON_DICT = {
         "method": "DOM.collectClassNamesFromSubtree",
         "params": params,
@@ -604,8 +597,7 @@ def copy_to(
     :param insert_before_node_id: *(Optional)* Drop the copy before this node (if absent, the copy becomes the last child of ```targetNodeId```).
     :returns: Id of the node clone.
     """
-    params: T_JSON_DICT = {}
-    params["nodeId"] = node_id.to_json()
+    params: T_JSON_DICT = {"nodeId": node_id.to_json()}
     params["targetNodeId"] = target_node_id.to_json()
     if insert_before_node_id is not None:
         params["insertBeforeNodeId"] = insert_before_node_id.to_json()
@@ -681,21 +673,19 @@ def scroll_into_view_if_needed(
         params["objectId"] = object_id.to_json()
     if rect is not None:
         params["rect"] = rect.to_json()
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "DOM.scrollIntoViewIfNeeded",
         "params": params,
     }
-    yield cmd_dict
 
 
 def disable() -> typing.Generator[T_JSON_DICT, T_JSON_DICT, None]:
     """
     Disables DOM agent for the given page.
     """
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "DOM.disable",
     }
-    yield cmd_dict
 
 
 def discard_search_results(
@@ -709,13 +699,11 @@ def discard_search_results(
 
     :param search_id: Unique search session identifier.
     """
-    params: T_JSON_DICT = {}
-    params["searchId"] = search_id
-    cmd_dict: T_JSON_DICT = {
+    params: T_JSON_DICT = {"searchId": search_id}
+    yield {
         "method": "DOM.discardSearchResults",
         "params": params,
     }
-    yield cmd_dict
 
 
 def enable(
@@ -729,11 +717,10 @@ def enable(
     params: T_JSON_DICT = {}
     if include_whitespace is not None:
         params["includeWhitespace"] = include_whitespace
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "DOM.enable",
         "params": params,
     }
-    yield cmd_dict
 
 
 def focus(
@@ -755,11 +742,10 @@ def focus(
         params["backendNodeId"] = backend_node_id.to_json()
     if object_id is not None:
         params["objectId"] = object_id.to_json()
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "DOM.focus",
         "params": params,
     }
-    yield cmd_dict
 
 
 def get_attributes(
@@ -771,8 +757,7 @@ def get_attributes(
     :param node_id: Id of the node to retrieve attibutes for.
     :returns: An interleaved array of node attribute names and values.
     """
-    params: T_JSON_DICT = {}
-    params["nodeId"] = node_id.to_json()
+    params: T_JSON_DICT = {"nodeId": node_id.to_json()}
     cmd_dict: T_JSON_DICT = {
         "method": "DOM.getAttributes",
         "params": params,
@@ -906,8 +891,7 @@ def get_nodes_for_subtree_by_style(
     :param pierce: *(Optional)* Whether or not iframes and shadow roots in the same target should be traversed when returning the results (default is false).
     :returns: Resulting nodes.
     """
-    params: T_JSON_DICT = {}
-    params["nodeId"] = node_id.to_json()
+    params: T_JSON_DICT = {"nodeId": node_id.to_json()}
     params["computedStyles"] = [i.to_json() for i in computed_styles]
     if pierce is not None:
         params["pierce"] = pierce
@@ -939,9 +923,7 @@ def get_node_for_location(
         1. **frameId** - Frame this node belongs to.
         2. **nodeId** - *(Optional)* Id of the node at given coordinates, only when enabled and requested document.
     """
-    params: T_JSON_DICT = {}
-    params["x"] = x
-    params["y"] = y
+    params: T_JSON_DICT = {"x": x, "y": y}
     if include_user_agent_shadow_dom is not None:
         params["includeUserAgentShadowDOM"] = include_user_agent_shadow_dom
     if ignore_pointer_events_none is not None:
@@ -997,8 +979,7 @@ def get_relayout_boundary(
     :param node_id: Id of the node.
     :returns: Relayout boundary node id for the given node.
     """
-    params: T_JSON_DICT = {}
-    params["nodeId"] = node_id.to_json()
+    params: T_JSON_DICT = {"nodeId": node_id.to_json()}
     cmd_dict: T_JSON_DICT = {
         "method": "DOM.getRelayoutBoundary",
         "params": params,
@@ -1023,10 +1004,11 @@ def get_search_results(
     :param to_index: End index of the search result to be returned.
     :returns: Ids of the search result nodes.
     """
-    params: T_JSON_DICT = {}
-    params["searchId"] = search_id
-    params["fromIndex"] = from_index
-    params["toIndex"] = to_index
+    params: T_JSON_DICT = {
+        "searchId": search_id,
+        "fromIndex": from_index,
+        "toIndex": to_index,
+    }
     cmd_dict: T_JSON_DICT = {
         "method": "DOM.getSearchResults",
         "params": params,
@@ -1039,30 +1021,27 @@ def hide_highlight() -> typing.Generator[T_JSON_DICT, T_JSON_DICT, None]:
     """
     Hides any highlight.
     """
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "DOM.hideHighlight",
     }
-    yield cmd_dict
 
 
 def highlight_node() -> typing.Generator[T_JSON_DICT, T_JSON_DICT, None]:
     """
     Highlights DOM node.
     """
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "DOM.highlightNode",
     }
-    yield cmd_dict
 
 
 def highlight_rect() -> typing.Generator[T_JSON_DICT, T_JSON_DICT, None]:
     """
     Highlights given rectangle.
     """
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "DOM.highlightRect",
     }
-    yield cmd_dict
 
 
 def mark_undoable_state() -> typing.Generator[T_JSON_DICT, T_JSON_DICT, None]:
@@ -1071,10 +1050,9 @@ def mark_undoable_state() -> typing.Generator[T_JSON_DICT, T_JSON_DICT, None]:
 
     **EXPERIMENTAL**
     """
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "DOM.markUndoableState",
     }
-    yield cmd_dict
 
 
 def move_to(
@@ -1090,8 +1068,7 @@ def move_to(
     :param insert_before_node_id: *(Optional)* Drop node before this one (if absent, the moved node becomes the last child of ```targetNodeId```).
     :returns: New id of the moved node.
     """
-    params: T_JSON_DICT = {}
-    params["nodeId"] = node_id.to_json()
+    params: T_JSON_DICT = {"nodeId": node_id.to_json()}
     params["targetNodeId"] = target_node_id.to_json()
     if insert_before_node_id is not None:
         params["insertBeforeNodeId"] = insert_before_node_id.to_json()
@@ -1120,8 +1097,7 @@ def perform_search(
         0. **searchId** - Unique search session identifier.
         1. **resultCount** - Number of search results.
     """
-    params: T_JSON_DICT = {}
-    params["query"] = query
+    params: T_JSON_DICT = {"query": query}
     if include_user_agent_shadow_dom is not None:
         params["includeUserAgentShadowDOM"] = include_user_agent_shadow_dom
     cmd_dict: T_JSON_DICT = {
@@ -1146,8 +1122,7 @@ def push_node_by_path_to_frontend(
     :param path: Path to node in the proprietary format.
     :returns: Id of the node for given path.
     """
-    params: T_JSON_DICT = {}
-    params["path"] = path
+    params: T_JSON_DICT = {"path": path}
     cmd_dict: T_JSON_DICT = {
         "method": "DOM.pushNodeByPathToFrontend",
         "params": params,
@@ -1167,8 +1142,9 @@ def push_nodes_by_backend_ids_to_frontend(
     :param backend_node_ids: The array of backend node ids.
     :returns: The array of ids of pushed nodes that correspond to the backend ids specified in backendNodeIds.
     """
-    params: T_JSON_DICT = {}
-    params["backendNodeIds"] = [i.to_json() for i in backend_node_ids]
+    params: T_JSON_DICT = {
+        "backendNodeIds": [i.to_json() for i in backend_node_ids]
+    }
     cmd_dict: T_JSON_DICT = {
         "method": "DOM.pushNodesByBackendIdsToFrontend",
         "params": params,
@@ -1188,9 +1164,7 @@ def query_selector(
     :param selector: Selector string.
     :returns: Query selector result.
     """
-    params: T_JSON_DICT = {}
-    params["nodeId"] = node_id.to_json()
-    params["selector"] = selector
+    params: T_JSON_DICT = {"nodeId": node_id.to_json(), "selector": selector}
     cmd_dict: T_JSON_DICT = {
         "method": "DOM.querySelector",
         "params": params,
@@ -1210,9 +1184,7 @@ def query_selector_all(
     :param selector: Selector string.
     :returns: Query selector result.
     """
-    params: T_JSON_DICT = {}
-    params["nodeId"] = node_id.to_json()
-    params["selector"] = selector
+    params: T_JSON_DICT = {"nodeId": node_id.to_json(), "selector": selector}
     cmd_dict: T_JSON_DICT = {
         "method": "DOM.querySelectorAll",
         "params": params,
@@ -1244,10 +1216,9 @@ def redo() -> typing.Generator[T_JSON_DICT, T_JSON_DICT, None]:
 
     **EXPERIMENTAL**
     """
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "DOM.redo",
     }
-    yield cmd_dict
 
 
 def remove_attribute(
@@ -1260,14 +1231,11 @@ def remove_attribute(
     :param node_id: Id of the element to remove attribute from.
     :param name: Name of the attribute to remove.
     """
-    params: T_JSON_DICT = {}
-    params["nodeId"] = node_id.to_json()
-    params["name"] = name
-    cmd_dict: T_JSON_DICT = {
+    params: T_JSON_DICT = {"nodeId": node_id.to_json(), "name": name}
+    yield {
         "method": "DOM.removeAttribute",
         "params": params,
     }
-    yield cmd_dict
 
 
 def remove_node(
@@ -1278,13 +1246,11 @@ def remove_node(
 
     :param node_id: Id of the node to remove.
     """
-    params: T_JSON_DICT = {}
-    params["nodeId"] = node_id.to_json()
-    cmd_dict: T_JSON_DICT = {
+    params: T_JSON_DICT = {"nodeId": node_id.to_json()}
+    yield {
         "method": "DOM.removeNode",
         "params": params,
     }
-    yield cmd_dict
 
 
 def request_child_nodes(
@@ -1301,17 +1267,15 @@ def request_child_nodes(
     :param depth: *(Optional)* The maximum depth at which children should be retrieved, defaults to 1. Use -1 for the entire subtree or provide an integer larger than 0.
     :param pierce: *(Optional)* Whether or not iframes and shadow roots should be traversed when returning the sub-tree (default is false).
     """
-    params: T_JSON_DICT = {}
-    params["nodeId"] = node_id.to_json()
+    params: T_JSON_DICT = {"nodeId": node_id.to_json()}
     if depth is not None:
         params["depth"] = depth
     if pierce is not None:
         params["pierce"] = pierce
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "DOM.requestChildNodes",
         "params": params,
     }
-    yield cmd_dict
 
 
 def request_node(
@@ -1325,8 +1289,7 @@ def request_node(
     :param object_id: JavaScript object id to convert into node.
     :returns: Node id for given object.
     """
-    params: T_JSON_DICT = {}
-    params["objectId"] = object_id.to_json()
+    params: T_JSON_DICT = {"objectId": object_id.to_json()}
     cmd_dict: T_JSON_DICT = {
         "method": "DOM.requestNode",
         "params": params,
@@ -1379,15 +1342,15 @@ def set_attribute_value(
     :param name: Attribute name.
     :param value: Attribute value.
     """
-    params: T_JSON_DICT = {}
-    params["nodeId"] = node_id.to_json()
-    params["name"] = name
-    params["value"] = value
-    cmd_dict: T_JSON_DICT = {
+    params: T_JSON_DICT = {
+        "nodeId": node_id.to_json(),
+        "name": name,
+        "value": value,
+    }
+    yield {
         "method": "DOM.setAttributeValue",
         "params": params,
     }
-    yield cmd_dict
 
 
 def set_attributes_as_text(
@@ -1403,16 +1366,13 @@ def set_attributes_as_text(
     :param text: Text with a number of attributes. Will parse this text using HTML parser.
     :param name: *(Optional)* Attribute name to replace with new attributes derived from text in case text parsed successfully.
     """
-    params: T_JSON_DICT = {}
-    params["nodeId"] = node_id.to_json()
-    params["text"] = text
+    params: T_JSON_DICT = {"nodeId": node_id.to_json(), "text": text}
     if name is not None:
         params["name"] = name
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "DOM.setAttributesAsText",
         "params": params,
     }
-    yield cmd_dict
 
 
 def set_file_input_files(
@@ -1429,19 +1389,17 @@ def set_file_input_files(
     :param backend_node_id: *(Optional)* Identifier of the backend node.
     :param object_id: *(Optional)* JavaScript object id of the node wrapper.
     """
-    params: T_JSON_DICT = {}
-    params["files"] = list(files)
+    params: T_JSON_DICT = {"files": list(files)}
     if node_id is not None:
         params["nodeId"] = node_id.to_json()
     if backend_node_id is not None:
         params["backendNodeId"] = backend_node_id.to_json()
     if object_id is not None:
         params["objectId"] = object_id.to_json()
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "DOM.setFileInputFiles",
         "params": params,
     }
-    yield cmd_dict
 
 
 def set_node_stack_traces_enabled(
@@ -1454,13 +1412,11 @@ def set_node_stack_traces_enabled(
 
     :param enable: Enable or disable.
     """
-    params: T_JSON_DICT = {}
-    params["enable"] = enable
-    cmd_dict: T_JSON_DICT = {
+    params: T_JSON_DICT = {"enable": enable}
+    yield {
         "method": "DOM.setNodeStackTracesEnabled",
         "params": params,
     }
-    yield cmd_dict
 
 
 def get_node_stack_traces(
@@ -1474,8 +1430,7 @@ def get_node_stack_traces(
     :param node_id: Id of the node to get stack traces for.
     :returns: *(Optional)* Creation stack trace, if available.
     """
-    params: T_JSON_DICT = {}
-    params["nodeId"] = node_id.to_json()
+    params: T_JSON_DICT = {"nodeId": node_id.to_json()}
     cmd_dict: T_JSON_DICT = {
         "method": "DOM.getNodeStackTraces",
         "params": params,
@@ -1496,8 +1451,7 @@ def get_file_info(
     :param object_id: JavaScript object id of the node wrapper.
     :returns:
     """
-    params: T_JSON_DICT = {}
-    params["objectId"] = object_id.to_json()
+    params: T_JSON_DICT = {"objectId": object_id.to_json()}
     cmd_dict: T_JSON_DICT = {
         "method": "DOM.getFileInfo",
         "params": params,
@@ -1517,13 +1471,11 @@ def set_inspected_node(
 
     :param node_id: DOM node id to be accessible by means of $x command line API.
     """
-    params: T_JSON_DICT = {}
-    params["nodeId"] = node_id.to_json()
-    cmd_dict: T_JSON_DICT = {
+    params: T_JSON_DICT = {"nodeId": node_id.to_json()}
+    yield {
         "method": "DOM.setInspectedNode",
         "params": params,
     }
-    yield cmd_dict
 
 
 def set_node_name(
@@ -1537,9 +1489,7 @@ def set_node_name(
     :param name: New node's name.
     :returns: New node's id.
     """
-    params: T_JSON_DICT = {}
-    params["nodeId"] = node_id.to_json()
-    params["name"] = name
+    params: T_JSON_DICT = {"nodeId": node_id.to_json(), "name": name}
     cmd_dict: T_JSON_DICT = {
         "method": "DOM.setNodeName",
         "params": params,
@@ -1558,14 +1508,11 @@ def set_node_value(
     :param node_id: Id of the node to set value for.
     :param value: New node's value.
     """
-    params: T_JSON_DICT = {}
-    params["nodeId"] = node_id.to_json()
-    params["value"] = value
-    cmd_dict: T_JSON_DICT = {
+    params: T_JSON_DICT = {"nodeId": node_id.to_json(), "value": value}
+    yield {
         "method": "DOM.setNodeValue",
         "params": params,
     }
-    yield cmd_dict
 
 
 def set_outer_html(
@@ -1578,14 +1525,11 @@ def set_outer_html(
     :param node_id: Id of the node to set markup for.
     :param outer_html: Outer HTML markup to set.
     """
-    params: T_JSON_DICT = {}
-    params["nodeId"] = node_id.to_json()
-    params["outerHTML"] = outer_html
-    cmd_dict: T_JSON_DICT = {
+    params: T_JSON_DICT = {"nodeId": node_id.to_json(), "outerHTML": outer_html}
+    yield {
         "method": "DOM.setOuterHTML",
         "params": params,
     }
-    yield cmd_dict
 
 
 def undo() -> typing.Generator[T_JSON_DICT, T_JSON_DICT, None]:
@@ -1594,10 +1538,9 @@ def undo() -> typing.Generator[T_JSON_DICT, T_JSON_DICT, None]:
 
     **EXPERIMENTAL**
     """
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "DOM.undo",
     }
-    yield cmd_dict
 
 
 def get_frame_owner(
@@ -1614,8 +1557,7 @@ def get_frame_owner(
         0. **backendNodeId** - Resulting node.
         1. **nodeId** - *(Optional)* Id of the node at given coordinates, only when enabled and requested document.
     """
-    params: T_JSON_DICT = {}
-    params["frameId"] = frame_id.to_json()
+    params: T_JSON_DICT = {"frameId": frame_id.to_json()}
     cmd_dict: T_JSON_DICT = {
         "method": "DOM.getFrameOwner",
         "params": params,
@@ -1647,8 +1589,7 @@ def get_container_for_node(
     :param logical_axes: *(Optional)*
     :returns: *(Optional)* The container node for the given node, or null if not found.
     """
-    params: T_JSON_DICT = {}
-    params["nodeId"] = node_id.to_json()
+    params: T_JSON_DICT = {"nodeId": node_id.to_json()}
     if container_name is not None:
         params["containerName"] = container_name
     if physical_axes is not None:
@@ -1675,8 +1616,7 @@ def get_querying_descendants_for_container(
     :param node_id: Id of the container node to find querying descendants from.
     :returns: Descendant nodes with container queries against the given container.
     """
-    params: T_JSON_DICT = {}
-    params["nodeId"] = node_id.to_json()
+    params: T_JSON_DICT = {"nodeId": node_id.to_json()}
     cmd_dict: T_JSON_DICT = {
         "method": "DOM.getQueryingDescendantsForContainer",
         "params": params,

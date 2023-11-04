@@ -307,26 +307,27 @@ class ResourceTiming:
     receive_headers_end: float
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["requestTime"] = self.request_time
-        json["proxyStart"] = self.proxy_start
-        json["proxyEnd"] = self.proxy_end
-        json["dnsStart"] = self.dns_start
-        json["dnsEnd"] = self.dns_end
-        json["connectStart"] = self.connect_start
-        json["connectEnd"] = self.connect_end
-        json["sslStart"] = self.ssl_start
-        json["sslEnd"] = self.ssl_end
-        json["workerStart"] = self.worker_start
-        json["workerReady"] = self.worker_ready
-        json["workerFetchStart"] = self.worker_fetch_start
-        json["workerRespondWithSettled"] = self.worker_respond_with_settled
-        json["sendStart"] = self.send_start
-        json["sendEnd"] = self.send_end
-        json["pushStart"] = self.push_start
-        json["pushEnd"] = self.push_end
-        json["receiveHeadersStart"] = self.receive_headers_start
-        json["receiveHeadersEnd"] = self.receive_headers_end
+        json: T_JSON_DICT = {
+            "requestTime": self.request_time,
+            "proxyStart": self.proxy_start,
+            "proxyEnd": self.proxy_end,
+            "dnsStart": self.dns_start,
+            "dnsEnd": self.dns_end,
+            "connectStart": self.connect_start,
+            "connectEnd": self.connect_end,
+            "sslStart": self.ssl_start,
+            "sslEnd": self.ssl_end,
+            "workerStart": self.worker_start,
+            "workerReady": self.worker_ready,
+            "workerFetchStart": self.worker_fetch_start,
+            "workerRespondWithSettled": self.worker_respond_with_settled,
+            "sendStart": self.send_start,
+            "sendEnd": self.send_end,
+            "pushStart": self.push_start,
+            "pushEnd": self.push_end,
+            "receiveHeadersStart": self.receive_headers_start,
+            "receiveHeadersEnd": self.receive_headers_end,
+        }
         return json
 
     @classmethod
@@ -439,10 +440,11 @@ class Request:
     is_same_site: typing.Optional[bool] = None
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["url"] = self.url
-        json["method"] = self.method
-        json["headers"] = self.headers.to_json()
+        json: T_JSON_DICT = {
+            "url": self.url,
+            "method": self.method,
+            "headers": self.headers.to_json(),
+        }
         json["initialPriority"] = self.initial_priority.to_json()
         json["referrerPolicy"] = self.referrer_policy
         if self.url_fragment is not None:
@@ -513,15 +515,16 @@ class SignedCertificateTimestamp:
     signature_data: str
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["status"] = self.status
-        json["origin"] = self.origin
-        json["logDescription"] = self.log_description
-        json["logId"] = self.log_id
-        json["timestamp"] = self.timestamp
-        json["hashAlgorithm"] = self.hash_algorithm
-        json["signatureAlgorithm"] = self.signature_algorithm
-        json["signatureData"] = self.signature_data
+        json: T_JSON_DICT = {
+            "status": self.status,
+            "origin": self.origin,
+            "logDescription": self.log_description,
+            "logId": self.log_id,
+            "timestamp": self.timestamp,
+            "hashAlgorithm": self.hash_algorithm,
+            "signatureAlgorithm": self.signature_algorithm,
+            "signatureData": self.signature_data,
+        }
         return json
 
     @classmethod
@@ -591,11 +594,12 @@ class SecurityDetails:
     server_signature_algorithm: typing.Optional[int] = None
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["protocol"] = self.protocol
-        json["keyExchange"] = self.key_exchange
-        json["cipher"] = self.cipher
-        json["certificateId"] = self.certificate_id.to_json()
+        json: T_JSON_DICT = {
+            "protocol": self.protocol,
+            "keyExchange": self.key_exchange,
+            "cipher": self.cipher,
+            "certificateId": self.certificate_id.to_json(),
+        }
         json["subjectName"] = self.subject_name
         json["sanList"] = list(self.san_list)
         json["issuer"] = self.issuer
@@ -724,8 +728,7 @@ class CorsErrorStatus:
     failed_parameter: str
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["corsError"] = self.cors_error.to_json()
+        json: T_JSON_DICT = {"corsError": self.cors_error.to_json()}
         json["failedParameter"] = self.failed_parameter
         return json
 
@@ -772,8 +775,7 @@ class TrustTokenParams:
     issuers: typing.Optional[typing.List[str]] = None
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["operation"] = self.operation.to_json()
+        json: T_JSON_DICT = {"operation": self.operation.to_json()}
         json["refreshPolicy"] = self.refresh_policy
         if self.issuers is not None:
             json["issuers"] = list(self.issuers)
@@ -900,11 +902,12 @@ class Response:
     security_details: typing.Optional[SecurityDetails] = None
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["url"] = self.url
-        json["status"] = self.status
-        json["statusText"] = self.status_text
-        json["headers"] = self.headers.to_json()
+        json: T_JSON_DICT = {
+            "url": self.url,
+            "status": self.status,
+            "statusText": self.status_text,
+            "headers": self.headers.to_json(),
+        }
         json["mimeType"] = self.mime_type
         json["connectionReused"] = self.connection_reused
         json["connectionId"] = self.connection_id
@@ -981,8 +984,7 @@ class WebSocketRequest:
     headers: Headers
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["headers"] = self.headers.to_json()
+        json: T_JSON_DICT = {"headers": self.headers.to_json()}
         return json
 
     @classmethod
@@ -1016,10 +1018,11 @@ class WebSocketResponse:
     request_headers_text: typing.Optional[str] = None
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["status"] = self.status
-        json["statusText"] = self.status_text
-        json["headers"] = self.headers.to_json()
+        json: T_JSON_DICT = {
+            "status": self.status,
+            "statusText": self.status_text,
+            "headers": self.headers.to_json(),
+        }
         if self.headers_text is not None:
             json["headersText"] = self.headers_text
         if self.request_headers is not None:
@@ -1057,10 +1060,11 @@ class WebSocketFrame:
     payload_data: str
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["opcode"] = self.opcode
-        json["mask"] = self.mask
-        json["payloadData"] = self.payload_data
+        json: T_JSON_DICT = {
+            "opcode": self.opcode,
+            "mask": self.mask,
+            "payloadData": self.payload_data,
+        }
         return json
 
     @classmethod
@@ -1090,9 +1094,7 @@ class CachedResource:
     response: typing.Optional[Response] = None
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["url"] = self.url
-        json["type"] = self.type_.to_json()
+        json: T_JSON_DICT = {"url": self.url, "type": self.type_.to_json()}
         json["bodySize"] = self.body_size
         if self.response is not None:
             json["response"] = self.response.to_json()
@@ -1134,8 +1136,7 @@ class Initiator:
     request_id: typing.Optional[RequestId] = None
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["type"] = self.type_
+        json: T_JSON_DICT = {"type": self.type_}
         if self.stack is not None:
             json["stack"] = self.stack.to_json()
         if self.url is not None:
@@ -1217,17 +1218,18 @@ class Cookie:
     partition_key_opaque: typing.Optional[bool] = None
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["name"] = self.name
-        json["value"] = self.value
-        json["domain"] = self.domain
-        json["path"] = self.path
-        json["expires"] = self.expires
-        json["size"] = self.size
-        json["httpOnly"] = self.http_only
-        json["secure"] = self.secure
-        json["session"] = self.session
-        json["priority"] = self.priority.to_json()
+        json: T_JSON_DICT = {
+            "name": self.name,
+            "value": self.value,
+            "domain": self.domain,
+            "path": self.path,
+            "expires": self.expires,
+            "size": self.size,
+            "httpOnly": self.http_only,
+            "secure": self.secure,
+            "session": self.session,
+            "priority": self.priority.to_json(),
+        }
         json["sameParty"] = self.same_party
         json["sourceScheme"] = self.source_scheme.to_json()
         json["sourcePort"] = self.source_port
@@ -1339,8 +1341,9 @@ class BlockedSetCookieWithReason:
     cookie: typing.Optional[Cookie] = None
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["blockedReasons"] = [i.to_json() for i in self.blocked_reasons]
+        json: T_JSON_DICT = {
+            "blockedReasons": [i.to_json() for i in self.blocked_reasons]
+        }
         json["cookieLine"] = self.cookie_line
         if self.cookie is not None:
             json["cookie"] = self.cookie.to_json()
@@ -1367,8 +1370,9 @@ class BlockedCookieWithReason:
     cookie: Cookie
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["blockedReasons"] = [i.to_json() for i in self.blocked_reasons]
+        json: T_JSON_DICT = {
+            "blockedReasons": [i.to_json() for i in self.blocked_reasons]
+        }
         json["cookie"] = self.cookie.to_json()
         return json
 
@@ -1433,9 +1437,7 @@ class CookieParam:
     partition_key: typing.Optional[str] = None
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["name"] = self.name
-        json["value"] = self.value
+        json: T_JSON_DICT = {"name": self.name, "value": self.value}
         if self.url is not None:
             json["url"] = self.url
         if self.domain is not None:
@@ -1500,10 +1502,11 @@ class AuthChallenge:
     source: typing.Optional[str] = None
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["origin"] = self.origin
-        json["scheme"] = self.scheme
-        json["realm"] = self.realm
+        json: T_JSON_DICT = {
+            "origin": self.origin,
+            "scheme": self.scheme,
+            "realm": self.realm,
+        }
         if self.source is not None:
             json["source"] = self.source
         return json
@@ -1537,8 +1540,7 @@ class AuthChallengeResponse:
     password: typing.Optional[str] = None
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["response"] = self.response
+        json: T_JSON_DICT = {"response": self.response}
         if self.username is not None:
             json["username"] = self.username
         if self.password is not None:
@@ -1638,13 +1640,14 @@ class SignedExchangeSignature:
     certificates: typing.Optional[typing.List[str]] = None
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["label"] = self.label
-        json["signature"] = self.signature
-        json["integrity"] = self.integrity
-        json["validityUrl"] = self.validity_url
-        json["date"] = self.date
-        json["expires"] = self.expires
+        json: T_JSON_DICT = {
+            "label": self.label,
+            "signature": self.signature,
+            "integrity": self.integrity,
+            "validityUrl": self.validity_url,
+            "date": self.date,
+            "expires": self.expires,
+        }
         if self.cert_url is not None:
             json["certUrl"] = self.cert_url
         if self.cert_sha256 is not None:
@@ -1690,10 +1693,11 @@ class SignedExchangeHeader:
     header_integrity: str
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["requestUrl"] = self.request_url
-        json["responseCode"] = self.response_code
-        json["responseHeaders"] = self.response_headers.to_json()
+        json: T_JSON_DICT = {
+            "requestUrl": self.request_url,
+            "responseCode": self.response_code,
+            "responseHeaders": self.response_headers.to_json(),
+        }
         json["signatures"] = [i.to_json() for i in self.signatures]
         json["headerIntegrity"] = self.header_integrity
         return json
@@ -1743,8 +1747,7 @@ class SignedExchangeError:
     error_field: typing.Optional[SignedExchangeErrorField] = None
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["message"] = self.message
+        json: T_JSON_DICT = {"message": self.message}
         if self.signature_index is not None:
             json["signatureIndex"] = self.signature_index
         if self.error_field is not None:
@@ -1778,8 +1781,7 @@ class SignedExchangeInfo:
     errors: typing.Optional[typing.List[SignedExchangeError]] = None
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["outerResponse"] = self.outer_response.to_json()
+        json: T_JSON_DICT = {"outerResponse": self.outer_response.to_json()}
         if self.header is not None:
             json["header"] = self.header.to_json()
         if self.security_details is not None:
@@ -1851,8 +1853,7 @@ class ConnectTiming:
     request_time: float
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["requestTime"] = self.request_time
+        json: T_JSON_DICT = {"requestTime": self.request_time}
         return json
 
     @classmethod
@@ -1871,9 +1872,10 @@ class ClientSecurityState:
     private_network_request_policy: PrivateNetworkRequestPolicy
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["initiatorIsSecureContext"] = self.initiator_is_secure_context
-        json["initiatorIPAddressSpace"] = self.initiator_ip_address_space.to_json()
+        json: T_JSON_DICT = {
+            "initiatorIsSecureContext": self.initiator_is_secure_context,
+            "initiatorIPAddressSpace": self.initiator_ip_address_space.to_json(),
+        }
         json["privateNetworkRequestPolicy"] = self.private_network_request_policy.to_json()
         return json
 
@@ -1913,8 +1915,7 @@ class CrossOriginOpenerPolicyStatus:
     report_only_reporting_endpoint: typing.Optional[str] = None
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["value"] = self.value.to_json()
+        json: T_JSON_DICT = {"value": self.value.to_json()}
         json["reportOnlyValue"] = self.report_only_value.to_json()
         if self.reporting_endpoint is not None:
             json["reportingEndpoint"] = self.reporting_endpoint
@@ -1956,8 +1957,7 @@ class CrossOriginEmbedderPolicyStatus:
     report_only_reporting_endpoint: typing.Optional[str] = None
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["value"] = self.value.to_json()
+        json: T_JSON_DICT = {"value": self.value.to_json()}
         json["reportOnlyValue"] = self.report_only_value.to_json()
         if self.reporting_endpoint is not None:
             json["reportingEndpoint"] = self.reporting_endpoint
@@ -1996,10 +1996,11 @@ class ContentSecurityPolicyStatus:
     source: ContentSecurityPolicySource
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["effectiveDirectives"] = self.effective_directives
-        json["isEnforced"] = self.is_enforced
-        json["source"] = self.source.to_json()
+        json: T_JSON_DICT = {
+            "effectiveDirectives": self.effective_directives,
+            "isEnforced": self.is_enforced,
+            "source": self.source.to_json(),
+        }
         return json
 
     @classmethod
@@ -2097,8 +2098,7 @@ class ReportingApiReport:
     status: ReportStatus
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["id"] = self.id_.to_json()
+        json: T_JSON_DICT = {"id": self.id_.to_json()}
         json["initiatorUrl"] = self.initiator_url
         json["destination"] = self.destination
         json["type"] = self.type_
@@ -2133,9 +2133,7 @@ class ReportingApiEndpoint:
     group_name: str
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["url"] = self.url
-        json["groupName"] = self.group_name
+        json: T_JSON_DICT = {"url": self.url, "groupName": self.group_name}
         return json
 
     @classmethod
@@ -2167,8 +2165,7 @@ class LoadNetworkResourcePageResult:
     headers: typing.Optional[Headers] = None
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["success"] = self.success
+        json: T_JSON_DICT = {"success": self.success}
         if self.net_error is not None:
             json["netError"] = self.net_error
         if self.net_error_name is not None:
@@ -2204,9 +2201,10 @@ class LoadNetworkResourceOptions:
     include_credentials: bool
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["disableCache"] = self.disable_cache
-        json["includeCredentials"] = self.include_credentials
+        json: T_JSON_DICT = {
+            "disableCache": self.disable_cache,
+            "includeCredentials": self.include_credentials,
+        }
         return json
 
     @classmethod
@@ -2227,13 +2225,11 @@ def set_accepted_encodings(
 
     :param encodings: List of accepted content encodings.
     """
-    params: T_JSON_DICT = {}
-    params["encodings"] = [i.to_json() for i in encodings]
-    cmd_dict: T_JSON_DICT = {
+    params: T_JSON_DICT = {"encodings": [i.to_json() for i in encodings]}
+    yield {
         "method": "Network.setAcceptedEncodings",
         "params": params,
     }
-    yield cmd_dict
 
 
 def clear_accepted_encodings_override() -> typing.Generator[T_JSON_DICT, T_JSON_DICT, None]:
@@ -2242,10 +2238,9 @@ def clear_accepted_encodings_override() -> typing.Generator[T_JSON_DICT, T_JSON_
 
     **EXPERIMENTAL**
     """
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Network.clearAcceptedEncodingsOverride",
     }
-    yield cmd_dict
 
 
 def can_clear_browser_cache() -> typing.Generator[T_JSON_DICT, T_JSON_DICT, bool]:
@@ -2291,20 +2286,18 @@ def clear_browser_cache() -> typing.Generator[T_JSON_DICT, T_JSON_DICT, None]:
     """
     Clears browser cache.
     """
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Network.clearBrowserCache",
     }
-    yield cmd_dict
 
 
 def clear_browser_cookies() -> typing.Generator[T_JSON_DICT, T_JSON_DICT, None]:
     """
     Clears browser cookies.
     """
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Network.clearBrowserCookies",
     }
-    yield cmd_dict
 
 
 def continue_intercepted_request(
@@ -2335,8 +2328,7 @@ def continue_intercepted_request(
     :param headers: *(Optional)* If set this allows the request headers to be changed. Must not be set in response to an authChallenge.
     :param auth_challenge_response: *(Optional)* Response to a requestIntercepted with an authChallenge. Must not be set otherwise.
     """
-    params: T_JSON_DICT = {}
-    params["interceptionId"] = interception_id.to_json()
+    params: T_JSON_DICT = {"interceptionId": interception_id.to_json()}
     if error_reason is not None:
         params["errorReason"] = error_reason.to_json()
     if raw_response is not None:
@@ -2351,11 +2343,10 @@ def continue_intercepted_request(
         params["headers"] = headers.to_json()
     if auth_challenge_response is not None:
         params["authChallengeResponse"] = auth_challenge_response.to_json()
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Network.continueInterceptedRequest",
         "params": params,
     }
-    yield cmd_dict
 
 
 def delete_cookies(
@@ -2372,29 +2363,26 @@ def delete_cookies(
     :param domain: *(Optional)* If specified, deletes only cookies with the exact domain.
     :param path: *(Optional)* If specified, deletes only cookies with the exact path.
     """
-    params: T_JSON_DICT = {}
-    params["name"] = name
+    params: T_JSON_DICT = {"name": name}
     if url is not None:
         params["url"] = url
     if domain is not None:
         params["domain"] = domain
     if path is not None:
         params["path"] = path
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Network.deleteCookies",
         "params": params,
     }
-    yield cmd_dict
 
 
 def disable() -> typing.Generator[T_JSON_DICT, T_JSON_DICT, None]:
     """
     Disables network tracking, prevents network events from being sent to the client.
     """
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Network.disable",
     }
-    yield cmd_dict
 
 
 def emulate_network_conditions(
@@ -2413,18 +2401,18 @@ def emulate_network_conditions(
     :param upload_throughput: Maximal aggregated upload throughput (bytes/sec).  -1 disables upload throttling.
     :param connection_type: *(Optional)* Connection type if known.
     """
-    params: T_JSON_DICT = {}
-    params["offline"] = offline
-    params["latency"] = latency
-    params["downloadThroughput"] = download_throughput
-    params["uploadThroughput"] = upload_throughput
+    params: T_JSON_DICT = {
+        "offline": offline,
+        "latency": latency,
+        "downloadThroughput": download_throughput,
+        "uploadThroughput": upload_throughput,
+    }
     if connection_type is not None:
         params["connectionType"] = connection_type.to_json()
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Network.emulateNetworkConditions",
         "params": params,
     }
-    yield cmd_dict
 
 
 def enable(
@@ -2446,11 +2434,10 @@ def enable(
         params["maxResourceBufferSize"] = max_resource_buffer_size
     if max_post_data_size is not None:
         params["maxPostDataSize"] = max_post_data_size
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Network.enable",
         "params": params,
     }
-    yield cmd_dict
 
 
 def get_all_cookies() -> typing.Generator[T_JSON_DICT, T_JSON_DICT, typing.List[Cookie]]:
@@ -2479,8 +2466,7 @@ def get_certificate(
     :param origin: Origin to get certificate for.
     :returns:
     """
-    params: T_JSON_DICT = {}
-    params["origin"] = origin
+    params: T_JSON_DICT = {"origin": origin}
     cmd_dict: T_JSON_DICT = {
         "method": "Network.getCertificate",
         "params": params,
@@ -2522,8 +2508,7 @@ def get_response_body(
         0. **body** - Response body.
         1. **base64Encoded** - True, if content was sent as base64.
     """
-    params: T_JSON_DICT = {}
-    params["requestId"] = request_id.to_json()
+    params: T_JSON_DICT = {"requestId": request_id.to_json()}
     cmd_dict: T_JSON_DICT = {
         "method": "Network.getResponseBody",
         "params": params,
@@ -2544,8 +2529,7 @@ def get_request_post_data(
     :param request_id: Identifier of the network request to get content for.
     :returns: Request body string, omitting files from multipart requests
     """
-    params: T_JSON_DICT = {}
-    params["requestId"] = request_id.to_json()
+    params: T_JSON_DICT = {"requestId": request_id.to_json()}
     cmd_dict: T_JSON_DICT = {
         "method": "Network.getRequestPostData",
         "params": params,
@@ -2568,8 +2552,7 @@ def get_response_body_for_interception(
         0. **body** - Response body.
         1. **base64Encoded** - True, if content was sent as base64.
     """
-    params: T_JSON_DICT = {}
-    params["interceptionId"] = interception_id.to_json()
+    params: T_JSON_DICT = {"interceptionId": interception_id.to_json()}
     cmd_dict: T_JSON_DICT = {
         "method": "Network.getResponseBodyForInterception",
         "params": params,
@@ -2595,8 +2578,7 @@ def take_response_body_for_interception_as_stream(
     :param interception_id:
     :returns:
     """
-    params: T_JSON_DICT = {}
-    params["interceptionId"] = interception_id.to_json()
+    params: T_JSON_DICT = {"interceptionId": interception_id.to_json()}
     cmd_dict: T_JSON_DICT = {
         "method": "Network.takeResponseBodyForInterceptionAsStream",
         "params": params,
@@ -2617,13 +2599,11 @@ def replay_xhr(
 
     :param request_id: Identifier of XHR to replay.
     """
-    params: T_JSON_DICT = {}
-    params["requestId"] = request_id.to_json()
-    cmd_dict: T_JSON_DICT = {
+    params: T_JSON_DICT = {"requestId": request_id.to_json()}
+    yield {
         "method": "Network.replayXHR",
         "params": params,
     }
-    yield cmd_dict
 
 
 def search_in_response_body(
@@ -2643,9 +2623,7 @@ def search_in_response_body(
     :param is_regex: *(Optional)* If true, treats string parameter as regex.
     :returns: List of search matches.
     """
-    params: T_JSON_DICT = {}
-    params["requestId"] = request_id.to_json()
-    params["query"] = query
+    params: T_JSON_DICT = {"requestId": request_id.to_json(), "query": query}
     if case_sensitive is not None:
         params["caseSensitive"] = case_sensitive
     if is_regex is not None:
@@ -2668,13 +2646,11 @@ def set_blocked_ur_ls(
 
     :param urls: URL patterns to block. Wildcards ('*') are allowed.
     """
-    params: T_JSON_DICT = {}
-    params["urls"] = list(urls)
-    cmd_dict: T_JSON_DICT = {
+    params: T_JSON_DICT = {"urls": list(urls)}
+    yield {
         "method": "Network.setBlockedURLs",
         "params": params,
     }
-    yield cmd_dict
 
 
 def set_bypass_service_worker(
@@ -2687,13 +2663,11 @@ def set_bypass_service_worker(
 
     :param bypass: Bypass service worker and load from network.
     """
-    params: T_JSON_DICT = {}
-    params["bypass"] = bypass
-    cmd_dict: T_JSON_DICT = {
+    params: T_JSON_DICT = {"bypass": bypass}
+    yield {
         "method": "Network.setBypassServiceWorker",
         "params": params,
     }
-    yield cmd_dict
 
 
 def set_cache_disabled(
@@ -2704,13 +2678,11 @@ def set_cache_disabled(
 
     :param cache_disabled: Cache disabled state.
     """
-    params: T_JSON_DICT = {}
-    params["cacheDisabled"] = cache_disabled
-    cmd_dict: T_JSON_DICT = {
+    params: T_JSON_DICT = {"cacheDisabled": cache_disabled}
+    yield {
         "method": "Network.setCacheDisabled",
         "params": params,
     }
-    yield cmd_dict
 
 
 def set_cookie(
@@ -2748,9 +2720,7 @@ def set_cookie(
     :param partition_key: **(EXPERIMENTAL)** *(Optional)* Cookie partition key. The site of the top-level URL the browser was visiting at the start of the request to the endpoint that set the cookie. If not set, the cookie will be set as not partitioned.
     :returns: Always set to true. If an error occurs, the response indicates protocol error.
     """
-    params: T_JSON_DICT = {}
-    params["name"] = name
-    params["value"] = value
+    params: T_JSON_DICT = {"name": name, "value": value}
     if url is not None:
         params["url"] = url
     if domain is not None:
@@ -2791,13 +2761,11 @@ def set_cookies(
 
     :param cookies: Cookies to be set.
     """
-    params: T_JSON_DICT = {}
-    params["cookies"] = [i.to_json() for i in cookies]
-    cmd_dict: T_JSON_DICT = {
+    params: T_JSON_DICT = {"cookies": [i.to_json() for i in cookies]}
+    yield {
         "method": "Network.setCookies",
         "params": params,
     }
-    yield cmd_dict
 
 
 def set_extra_http_headers(
@@ -2808,13 +2776,11 @@ def set_extra_http_headers(
 
     :param headers: Map with extra HTTP headers.
     """
-    params: T_JSON_DICT = {}
-    params["headers"] = headers.to_json()
-    cmd_dict: T_JSON_DICT = {
+    params: T_JSON_DICT = {"headers": headers.to_json()}
+    yield {
         "method": "Network.setExtraHTTPHeaders",
         "params": params,
     }
-    yield cmd_dict
 
 
 def set_attach_debug_stack(
@@ -2827,13 +2793,11 @@ def set_attach_debug_stack(
 
     :param enabled: Whether to attach a page script stack for debugging purpose.
     """
-    params: T_JSON_DICT = {}
-    params["enabled"] = enabled
-    cmd_dict: T_JSON_DICT = {
+    params: T_JSON_DICT = {"enabled": enabled}
+    yield {
         "method": "Network.setAttachDebugStack",
         "params": params,
     }
-    yield cmd_dict
 
 
 def set_request_interception(
@@ -2847,13 +2811,11 @@ def set_request_interception(
 
     :param patterns: Requests matching any of these patterns will be forwarded and wait for the corresponding continueInterceptedRequest call.
     """
-    params: T_JSON_DICT = {}
-    params["patterns"] = [i.to_json() for i in patterns]
-    cmd_dict: T_JSON_DICT = {
+    params: T_JSON_DICT = {"patterns": [i.to_json() for i in patterns]}
+    yield {
         "method": "Network.setRequestInterception",
         "params": params,
     }
-    yield cmd_dict
 
 
 def set_user_agent_override(
@@ -2870,19 +2832,17 @@ def set_user_agent_override(
     :param platform: *(Optional)* The platform navigator.platform should return.
     :param user_agent_metadata: **(EXPERIMENTAL)** *(Optional)* To be sent in Sec-CH-UA-* headers and returned in navigator.userAgentData
     """
-    params: T_JSON_DICT = {}
-    params["userAgent"] = user_agent
+    params: T_JSON_DICT = {"userAgent": user_agent}
     if accept_language is not None:
         params["acceptLanguage"] = accept_language
     if platform is not None:
         params["platform"] = platform
     if user_agent_metadata is not None:
         params["userAgentMetadata"] = user_agent_metadata.to_json()
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Network.setUserAgentOverride",
         "params": params,
     }
-    yield cmd_dict
 
 
 def get_security_isolation_status(
@@ -2918,13 +2878,11 @@ def enable_reporting_api(
 
     :param enable: Whether to enable or disable events for the Reporting API
     """
-    params: T_JSON_DICT = {}
-    params["enable"] = enable
-    cmd_dict: T_JSON_DICT = {
+    params: T_JSON_DICT = {"enable": enable}
+    yield {
         "method": "Network.enableReportingApi",
         "params": params,
     }
-    yield cmd_dict
 
 
 def load_network_resource(
@@ -2942,9 +2900,7 @@ def load_network_resource(
     :param frame_id: *(Optional)* Frame id to get the resource for. Mandatory for frame targets, and should be omitted for worker targets.
     :returns:
     """
-    params: T_JSON_DICT = {}
-    params["url"] = url
-    params["options"] = options.to_json()
+    params: T_JSON_DICT = {"url": url, "options": options.to_json()}
     if frame_id is not None:
         params["frameId"] = frame_id.to_json()
     cmd_dict: T_JSON_DICT = {

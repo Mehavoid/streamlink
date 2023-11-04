@@ -206,8 +206,7 @@ class SteamBroadcastPlugin(Plugin):
     def _get_streams(self):
         self.session.http.headers["User-Agent"] = f"streamlink/{self.session.version}"
 
-        email = self.get_option("email")
-        if email:
+        if email := self.get_option("email"):
             log.info(f"Attempting to login to Steam as {email}")
             try:
                 success = self.dologin(email, self.get_option("password"))

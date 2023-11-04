@@ -43,10 +43,7 @@ class ConsoleOutput:
             return None
 
     def askpass(self, prompt: str) -> Optional[str]:
-        if not sys.stdin.isatty():
-            return None
-
-        return getpass(prompt, self.output)
+        return None if not sys.stdin.isatty() else getpass(prompt, self.output)
 
     def msg(self, msg: str) -> None:
         if self.json:

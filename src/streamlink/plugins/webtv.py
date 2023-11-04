@@ -69,9 +69,9 @@ class WebTV(Plugin):
                     url = update_scheme("https://", source["src"], force=False)
 
                     try:
-                        # try to parse the stream as a variant playlist
-                        variant = HLSStream.parse_variant_playlist(self.session, url, headers=headers)
-                        if variant:
+                        if variant := HLSStream.parse_variant_playlist(
+                            self.session, url, headers=headers
+                        ):
                             yield from variant.items()
                         else:
                             # and if that fails, try it as a plain HLS stream

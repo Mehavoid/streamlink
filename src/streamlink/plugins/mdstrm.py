@@ -79,8 +79,7 @@ class MDStrm(Plugin):
         )
 
         schema = validate.Schema(validate.xml_xpath_string(".//div[@id='message']/text()"))
-        error_msg = schema.validate(root)
-        if error_msg:
+        if error_msg := schema.validate(root):
             log.error(f"{error_msg}")
 
         schema_options = validate.Schema(
@@ -127,23 +126,25 @@ class MDStrm(Plugin):
                 "normalize-space(.//iframe[contains(@src,'mdstrm.com')][@id='programmatic']/@src)",
             ),
         )
-        programmatic_url = schema.validate(root)
-        if programmatic_url:
+        if programmatic_url := schema.validate(root):
             programmatic_url = update_scheme("https://", programmatic_url, force=False)
             log.debug(f"programmatic_url={programmatic_url}")
 
-            ad = self.session.http.get(
+            if ad := self.session.http.get(
                 programmatic_url,
                 schema=validate.Schema(
                     validate.parse_html(),
-                    validate.xml_xpath_string(".//script[contains(text(),'parent._dai_session')]/text()"),
+                    validate.xml_xpath_string(
+                        ".//script[contains(text(),'parent._dai_session')]/text()"
+                    ),
                     validate.none_or_all(
-                        re.compile(r"""parent\._dai_session\s*=\s*(?P<q>['"])(?P<dai_session>.+?)(?P=q);"""),
+                        re.compile(
+                            r"""parent\._dai_session\s*=\s*(?P<q>['"])(?P<dai_session>.+?)(?P=q);"""
+                        ),
                         validate.none_or_all(validate.get("dai_session")),
                     ),
                 ),
-            )
-            if ad:
+            ):
                 params["adInsertionSessionId"] = ad
             else:
                 log.debug("Failed to find 'parent._dai_session'")

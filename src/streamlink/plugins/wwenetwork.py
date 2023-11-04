@@ -96,10 +96,7 @@ class WWENetwork(Plugin):
 
     def _get_video_id(self, stream_id):
         live_id = self._get_live_id(stream_id)
-        if not live_id:
-            return "vod/{0}".format(stream_id)
-
-        return live_id
+        return "vod/{0}".format(stream_id) if not live_id else live_id
 
     def _get_live_id(self, stream_id):
         log.debug("Loading live event")
@@ -120,9 +117,7 @@ class WWENetwork(Plugin):
             start_point = 0
 
         stream_id = self.match.group("stream_id")
-        content_id = self._get_video_id(stream_id)
-
-        if content_id:
+        if content_id := self._get_video_id(stream_id):
             log.debug("Found content ID: {0}".format(content_id))
             info = self._get_media_info(content_id)
             if info.get("hlsUrl"):

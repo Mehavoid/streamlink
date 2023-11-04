@@ -14,10 +14,7 @@ _UNSUPPORTED_WIN32 = "\x7f\"*/:<>?\\|"
 
 RE_CHARS_POSIX = re.compile(f"[{re.escape(_UNPRINTABLE + _UNSUPPORTED_POSIX)}]+")
 RE_CHARS_WIN32 = re.compile(f"[{re.escape(_UNPRINTABLE + _UNSUPPORTED_WIN32)}]+")
-if is_win32:
-    RE_CHARS = RE_CHARS_WIN32
-else:
-    RE_CHARS = RE_CHARS_POSIX
+RE_CHARS = RE_CHARS_WIN32 if is_win32 else RE_CHARS_POSIX
 
 
 def replace_chars(path: str, charmap: Optional[str] = None, replacement: str = REPLACEMENT) -> str:

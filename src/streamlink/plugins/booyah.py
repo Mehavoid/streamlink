@@ -134,8 +134,13 @@ class Booyah(Plugin):
         if not mirror:
             return
 
-        auto = next(filter(lambda item: item["resolution"] == "Auto", streams["stream_addr_list"]), None)
-        if auto:
+        if auto := next(
+            filter(
+                lambda item: item["resolution"] == "Auto",
+                streams["stream_addr_list"],
+            ),
+            None,
+        ):
             yield from HLSStream.parse_variant_playlist(self.session, urljoin(mirror["url_domain"], auto["url_path"])).items()
 
         if streams["source_stream_url_path"]:

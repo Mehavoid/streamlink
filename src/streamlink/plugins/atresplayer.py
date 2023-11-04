@@ -74,11 +74,12 @@ class AtresPlayer(Plugin):
             log.debug(f"Stream source: {streamsrc} ({streamtype or 'n/a'})")
 
             if streamtype == "application/vnd.apple.mpegurl":
-                streams = HLSStream.parse_variant_playlist(self.session, streamsrc)
-                if not streams:
-                    yield "live", HLSStream(self.session, streamsrc)
-                else:
+                if streams := HLSStream.parse_variant_playlist(
+                    self.session, streamsrc
+                ):
                     yield from streams.items()
+                else:
+                    yield "live", HLSStream(self.session, streamsrc)
             elif streamtype == "application/dash+xml":
                 yield from DASHStream.parse_manifest(self.session, streamsrc).items()
 

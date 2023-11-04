@@ -8,8 +8,7 @@ from streamlink.compat import is_darwin, is_win32
 
 def _resolve_executable(paths: Iterable[Path], *exes: str) -> Optional[Path]:
     for exe in exes:
-        resolved = which(exe)
-        if resolved:
+        if resolved := which(exe):
             return Path(resolved).resolve()
 
     checked = set()
@@ -19,8 +18,7 @@ def _resolve_executable(paths: Iterable[Path], *exes: str) -> Optional[Path]:
             if fullpath in checked:
                 continue
             checked.add(fullpath)
-            resolved = which(fullpath)
-            if resolved:
+            if resolved := which(fullpath):
                 return Path(resolved).resolve()
 
     return None

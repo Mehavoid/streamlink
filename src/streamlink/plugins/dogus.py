@@ -29,23 +29,19 @@ class Dogus(Plugin):
         yt_iframe = root.xpath("string(.//iframe[contains(@src,'youtube.com')][1]/@src)")
         # https://www.startv.com.tr/canli-yayin
         dm_iframe = root.xpath("string(.//iframe[contains(@src,'dailymotion.com')][1]/@src)")
-        # https://www.kralmuzik.com.tr/tv/kral-tv
-        # https://www.kralmuzik.com.tr/tv/kral-pop-tv
-        yt_script = root.xpath("string(.//script[contains(text(), 'youtube.init')][1]/text())")
-        if yt_script:
-            m = self._re_yt_script.search(yt_script)
-            if m:
+        if yt_script := root.xpath(
+            "string(.//script[contains(text(), 'youtube.init')][1]/text())"
+        ):
+            if m := self._re_yt_script.search(yt_script):
                 yt_iframe = f"https://www.youtube.com/watch?v={m.group(1)}"
 
-        iframe = yt_iframe or dm_iframe
-        if iframe:
+        if iframe := yt_iframe or dm_iframe:
             return self.session.streams(iframe)
 
-        # http://eurostartv.com.tr/canli-izle
-        dd_script = root.xpath("string(.//script[contains(text(), '/live/hls/')][1]/text())")
-        if dd_script:
-            m = self._re_live_hls.search(dd_script)
-            if m:
+        if dd_script := root.xpath(
+            "string(.//script[contains(text(), '/live/hls/')][1]/text())"
+        ):
+            if m := self._re_live_hls.search(dd_script):
                 return HLSStream.parse_variant_playlist(self.session, m.group(1))
 
 

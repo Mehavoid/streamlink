@@ -30,8 +30,7 @@ class Huya(Plugin):
 
     @classmethod
     def stream_weight(cls, key):
-        weight = cls.QUALITY_WEIGHTS.get(key)
-        if weight:
+        if weight := cls.QUALITY_WEIGHTS.get(key):
             return weight, "huya"
 
         return super().stream_weight(key)

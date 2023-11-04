@@ -115,11 +115,7 @@ class StreamlinkOptions(Options):
 
     def _set_http_disable_dh(self, key, value):
         self.set_explicit(key, value)
-        if value:
-            adapter = TLSNoDHAdapter()
-        else:
-            adapter = HTTPAdapter()
-
+        adapter = TLSNoDHAdapter() if value else HTTPAdapter()
         self.session.http.mount("https://", adapter)
 
     @staticmethod

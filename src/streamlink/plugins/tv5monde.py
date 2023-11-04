@@ -67,8 +67,14 @@ class TV5Monde(Plugin):
         )
         broadcast = schema_broadcast.validate(data)
 
-        deferred = next((item["url"] for item in broadcast if item["type"] == "application/deferred"), None)
-        if deferred:
+        if deferred := next(
+            (
+                item["url"]
+                for item in broadcast
+                if item["type"] == "application/deferred"
+            ),
+            None,
+        ):
             url = self._URL_API.format(asset=quote(deferred))
             broadcast = self.session.http.get(url, schema=validate.Schema(
                 validate.parse_json(),

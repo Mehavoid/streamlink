@@ -145,9 +145,7 @@ class Streann(Plugin):
         # Get the query string
         encrypted_data = urlparse(self.url).query
         data = base64.b64decode(encrypted_data)
-        # and decrypt it
-        passphrase = self.passphrase()
-        if passphrase:
+        if passphrase := self.passphrase():
             log.debug("Found passphrase")
             params = decrypt_openssl(data, passphrase)
             config = parse_qsd(params.decode("utf8"))

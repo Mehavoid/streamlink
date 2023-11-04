@@ -188,9 +188,7 @@ class M3U8Parser(Generic[TM3U8_co, THLSSegment_co, THLSPlaylist_co], metaclass=M
 
     @classmethod
     def split_tag(cls, line: str) -> Union[Tuple[str, str], Tuple[None, None]]:
-        match = cls._tag_re.match(line)
-
-        if match:
+        if match := cls._tag_re.match(line):
             return match.group("tag"), (match.group("value") or "").strip()
 
         return None, None
@@ -584,8 +582,7 @@ class M3U8Parser(Generic[TM3U8_co, THLSSegment_co, THLSPlaylist_co], metaclass=M
         # Associate Media entries with each Playlist
         for playlist in self.m3u8.playlists:
             for media_type in ("audio", "video", "subtitles"):
-                group_id = getattr(playlist.stream_info, media_type, None)
-                if group_id:
+                if group_id := getattr(playlist.stream_info, media_type, None):
                     for media in filter(lambda m: m.group_id == group_id, self.m3u8.media):
                         playlist.media.append(media)
 

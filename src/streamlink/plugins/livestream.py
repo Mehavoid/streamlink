@@ -70,9 +70,9 @@ class Livestream(Plugin):
                         ),
                     ),
                 )
-            if event is None:
-                log.error("Could not find event ID")
-                return
+        if event is None:
+            log.error("Could not find event ID")
+            return
 
         if video is None:
             self.id, self.title, is_live, m3u8_url = self.session.http.get(

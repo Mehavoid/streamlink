@@ -73,8 +73,7 @@ class TargetInfo:
     subtype: typing.Optional[str] = None
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["targetId"] = self.target_id.to_json()
+        json: T_JSON_DICT = {"targetId": self.target_id.to_json()}
         json["type"] = self.type_
         json["title"] = self.title
         json["url"] = self.url
@@ -160,9 +159,7 @@ class RemoteLocation:
     port: int
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["host"] = self.host
-        json["port"] = self.port
+        json: T_JSON_DICT = {"host": self.host, "port": self.port}
         return json
 
     @classmethod
@@ -181,13 +178,11 @@ def activate_target(
 
     :param target_id:
     """
-    params: T_JSON_DICT = {}
-    params["targetId"] = target_id.to_json()
-    cmd_dict: T_JSON_DICT = {
+    params: T_JSON_DICT = {"targetId": target_id.to_json()}
+    yield {
         "method": "Target.activateTarget",
         "params": params,
     }
-    yield cmd_dict
 
 
 def attach_to_target(
@@ -201,8 +196,7 @@ def attach_to_target(
     :param flatten: *(Optional)* Enables "flat" access to the session via specifying sessionId attribute in the commands. We plan to make this the default, deprecate non-flattened mode, and eventually retire it. See crbug.com/991325.
     :returns: Id assigned to the session.
     """
-    params: T_JSON_DICT = {}
-    params["targetId"] = target_id.to_json()
+    params: T_JSON_DICT = {"targetId": target_id.to_json()}
     if flatten is not None:
         params["flatten"] = flatten
     cmd_dict: T_JSON_DICT = {
@@ -237,8 +231,7 @@ def close_target(
     :param target_id:
     :returns: Always set to true. If an error occurs, the response indicates protocol error.
     """
-    params: T_JSON_DICT = {}
-    params["targetId"] = target_id.to_json()
+    params: T_JSON_DICT = {"targetId": target_id.to_json()}
     cmd_dict: T_JSON_DICT = {
         "method": "Target.closeTarget",
         "params": params,
@@ -266,15 +259,13 @@ def expose_dev_tools_protocol(
     :param target_id:
     :param binding_name: *(Optional)* Binding name, 'cdp' if not specified.
     """
-    params: T_JSON_DICT = {}
-    params["targetId"] = target_id.to_json()
+    params: T_JSON_DICT = {"targetId": target_id.to_json()}
     if binding_name is not None:
         params["bindingName"] = binding_name
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Target.exposeDevToolsProtocol",
         "params": params,
     }
-    yield cmd_dict
 
 
 def create_browser_context(
@@ -350,8 +341,7 @@ def create_target(
     :param for_tab: **(EXPERIMENTAL)** *(Optional)* Whether to create the target of type "tab".
     :returns: The id of the page opened.
     """
-    params: T_JSON_DICT = {}
-    params["url"] = url
+    params: T_JSON_DICT = {"url": url}
     if width is not None:
         params["width"] = width
     if height is not None:
@@ -389,11 +379,10 @@ def detach_from_target(
         params["sessionId"] = session_id.to_json()
     if target_id is not None:
         params["targetId"] = target_id.to_json()
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Target.detachFromTarget",
         "params": params,
     }
-    yield cmd_dict
 
 
 def dispose_browser_context(
@@ -407,13 +396,11 @@ def dispose_browser_context(
 
     :param browser_context_id:
     """
-    params: T_JSON_DICT = {}
-    params["browserContextId"] = browser_context_id.to_json()
-    cmd_dict: T_JSON_DICT = {
+    params: T_JSON_DICT = {"browserContextId": browser_context_id.to_json()}
+    yield {
         "method": "Target.disposeBrowserContext",
         "params": params,
     }
-    yield cmd_dict
 
 
 def get_target_info(
@@ -472,17 +459,15 @@ def send_message_to_target(
     :param session_id: *(Optional)* Identifier of the session.
     :param target_id: *(Optional)* Deprecated.
     """
-    params: T_JSON_DICT = {}
-    params["message"] = message
+    params: T_JSON_DICT = {"message": message}
     if session_id is not None:
         params["sessionId"] = session_id.to_json()
     if target_id is not None:
         params["targetId"] = target_id.to_json()
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Target.sendMessageToTarget",
         "params": params,
     }
-    yield cmd_dict
 
 
 def set_auto_attach(
@@ -505,18 +490,18 @@ def set_auto_attach(
     :param flatten: *(Optional)* Enables "flat" access to the session via specifying sessionId attribute in the commands. We plan to make this the default, deprecate non-flattened mode, and eventually retire it. See crbug.com/991325.
     :param filter_: **(EXPERIMENTAL)** *(Optional)* Only targets matching filter will be attached.
     """
-    params: T_JSON_DICT = {}
-    params["autoAttach"] = auto_attach
-    params["waitForDebuggerOnStart"] = wait_for_debugger_on_start
+    params: T_JSON_DICT = {
+        "autoAttach": auto_attach,
+        "waitForDebuggerOnStart": wait_for_debugger_on_start,
+    }
     if flatten is not None:
         params["flatten"] = flatten
     if filter_ is not None:
         params["filter"] = filter_.to_json()
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Target.setAutoAttach",
         "params": params,
     }
-    yield cmd_dict
 
 
 def auto_attach_related(
@@ -537,16 +522,16 @@ def auto_attach_related(
     :param wait_for_debugger_on_start: Whether to pause new targets when attaching to them. Use ```Runtime.runIfWaitingForDebugger``` to run paused targets.
     :param filter_: **(EXPERIMENTAL)** *(Optional)* Only targets matching filter will be attached.
     """
-    params: T_JSON_DICT = {}
-    params["targetId"] = target_id.to_json()
-    params["waitForDebuggerOnStart"] = wait_for_debugger_on_start
+    params: T_JSON_DICT = {
+        "targetId": target_id.to_json(),
+        "waitForDebuggerOnStart": wait_for_debugger_on_start,
+    }
     if filter_ is not None:
         params["filter"] = filter_.to_json()
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Target.autoAttachRelated",
         "params": params,
     }
-    yield cmd_dict
 
 
 def set_discover_targets(
@@ -560,15 +545,13 @@ def set_discover_targets(
     :param discover: Whether to discover available targets.
     :param filter_: **(EXPERIMENTAL)** *(Optional)* Only targets matching filter will be attached. If ```discover```` is false, ````filter``` must be omitted or empty.
     """
-    params: T_JSON_DICT = {}
-    params["discover"] = discover
+    params: T_JSON_DICT = {"discover": discover}
     if filter_ is not None:
         params["filter"] = filter_.to_json()
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Target.setDiscoverTargets",
         "params": params,
     }
-    yield cmd_dict
 
 
 def set_remote_locations(
@@ -582,13 +565,11 @@ def set_remote_locations(
 
     :param locations: List of remote locations.
     """
-    params: T_JSON_DICT = {}
-    params["locations"] = [i.to_json() for i in locations]
-    cmd_dict: T_JSON_DICT = {
+    params: T_JSON_DICT = {"locations": [i.to_json() for i in locations]}
+    yield {
         "method": "Target.setRemoteLocations",
         "params": params,
     }
-    yield cmd_dict
 
 
 @event_class("Target.attachedToTarget")

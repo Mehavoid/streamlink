@@ -60,14 +60,12 @@ class EarthCam(Plugin):
             return
 
         log.debug(f"Found cam {cam_name}")
-        hls_domain = cam_data["html5_streamingdomain"]
-        hls_playpath = cam_data["html5_streampath"]
-
         self.author = cam_data["group"]
         self.category = cam_data["location"]
         self.title = cam_data["title"]
 
-        if hls_playpath:
+        if hls_playpath := cam_data["html5_streampath"]:
+            hls_domain = cam_data["html5_streamingdomain"]
             hls_url = update_scheme("https://", f"{hls_domain}{hls_playpath}")
             yield from HLSStream.parse_variant_playlist(self.session, hls_url).items()
 

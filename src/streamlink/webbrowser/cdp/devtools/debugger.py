@@ -61,8 +61,7 @@ class Location:
     column_number: typing.Optional[int] = None
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["scriptId"] = self.script_id.to_json()
+        json: T_JSON_DICT = {"scriptId": self.script_id.to_json()}
         json["lineNumber"] = self.line_number
         if self.column_number is not None:
             json["columnNumber"] = self.column_number
@@ -87,9 +86,10 @@ class ScriptPosition:
     column_number: int
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["lineNumber"] = self.line_number
-        json["columnNumber"] = self.column_number
+        json: T_JSON_DICT = {
+            "lineNumber": self.line_number,
+            "columnNumber": self.column_number,
+        }
         return json
 
     @classmethod
@@ -112,8 +112,7 @@ class LocationRange:
     end: ScriptPosition
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["scriptId"] = self.script_id.to_json()
+        json: T_JSON_DICT = {"scriptId": self.script_id.to_json()}
         json["start"] = self.start.to_json()
         json["end"] = self.end.to_json()
         return json
@@ -165,8 +164,7 @@ class CallFrame:
     can_be_restarted: typing.Optional[bool] = None
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["callFrameId"] = self.call_frame_id.to_json()
+        json: T_JSON_DICT = {"callFrameId": self.call_frame_id.to_json()}
         json["functionName"] = self.function_name
         json["location"] = self.location.to_json()
         json["url"] = self.url
@@ -217,9 +215,7 @@ class Scope:
     end_location: typing.Optional[Location] = None
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["type"] = self.type_
-        json["object"] = self.object_.to_json()
+        json: T_JSON_DICT = {"type": self.type_, "object": self.object_.to_json()}
         if self.name is not None:
             json["name"] = self.name
         if self.start_location is not None:
@@ -251,9 +247,10 @@ class SearchMatch:
     line_content: str
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["lineNumber"] = self.line_number
-        json["lineContent"] = self.line_content
+        json: T_JSON_DICT = {
+            "lineNumber": self.line_number,
+            "lineContent": self.line_content,
+        }
         return json
 
     @classmethod
@@ -278,8 +275,7 @@ class BreakLocation:
     type_: typing.Optional[str] = None
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["scriptId"] = self.script_id.to_json()
+        json: T_JSON_DICT = {"scriptId": self.script_id.to_json()}
         json["lineNumber"] = self.line_number
         if self.column_number is not None:
             json["columnNumber"] = self.column_number
@@ -306,9 +302,10 @@ class WasmDisassemblyChunk:
     bytecode_offsets: typing.List[int]
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["lines"] = list(self.lines)
-        json["bytecodeOffsets"] = list(self.bytecode_offsets)
+        json: T_JSON_DICT = {
+            "lines": list(self.lines),
+            "bytecodeOffsets": list(self.bytecode_offsets),
+        }
         return json
 
     @classmethod
@@ -346,8 +343,7 @@ class DebugSymbols:
     external_url: typing.Optional[str] = None
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["type"] = self.type_
+        json: T_JSON_DICT = {"type": self.type_}
         if self.external_url is not None:
             json["externalURL"] = self.external_url
         return json
@@ -370,25 +366,22 @@ def continue_to_location(
     :param location: Location to continue to.
     :param target_call_frames: *(Optional)*
     """
-    params: T_JSON_DICT = {}
-    params["location"] = location.to_json()
+    params: T_JSON_DICT = {"location": location.to_json()}
     if target_call_frames is not None:
         params["targetCallFrames"] = target_call_frames
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Debugger.continueToLocation",
         "params": params,
     }
-    yield cmd_dict
 
 
 def disable() -> typing.Generator[T_JSON_DICT, T_JSON_DICT, None]:
     """
     Disables debugger for given page.
     """
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Debugger.disable",
     }
-    yield cmd_dict
 
 
 def enable(
@@ -440,9 +433,10 @@ def evaluate_on_call_frame(
         0. **result** - Object wrapper for the evaluation result.
         1. **exceptionDetails** - *(Optional)* Exception details.
     """
-    params: T_JSON_DICT = {}
-    params["callFrameId"] = call_frame_id.to_json()
-    params["expression"] = expression
+    params: T_JSON_DICT = {
+        "callFrameId": call_frame_id.to_json(),
+        "expression": expression,
+    }
     if object_group is not None:
         params["objectGroup"] = object_group
     if include_command_line_api is not None:
@@ -482,8 +476,7 @@ def get_possible_breakpoints(
     :param restrict_to_function: *(Optional)* Only consider locations which are in the same (non-nested) function as start.
     :returns: List of the possible breakpoint locations.
     """
-    params: T_JSON_DICT = {}
-    params["start"] = start.to_json()
+    params: T_JSON_DICT = {"start": start.to_json()}
     if end is not None:
         params["end"] = end.to_json()
     if restrict_to_function is not None:
@@ -508,8 +501,7 @@ def get_script_source(
         0. **scriptSource** - Script source (empty in case of Wasm bytecode).
         1. **bytecode** - *(Optional)* Wasm bytecode. (Encoded as a base64 string when passed over JSON)
     """
-    params: T_JSON_DICT = {}
-    params["scriptId"] = script_id.to_json()
+    params: T_JSON_DICT = {"scriptId": script_id.to_json()}
     cmd_dict: T_JSON_DICT = {
         "method": "Debugger.getScriptSource",
         "params": params,
@@ -537,8 +529,7 @@ def disassemble_wasm_module(
         2. **functionBodyOffsets** - The offsets of all function bodies, in the format [start1, end1, start2, end2, ...] where all ends are exclusive.
         3. **chunk** - The first chunk of disassembly.
     """
-    params: T_JSON_DICT = {}
-    params["scriptId"] = script_id.to_json()
+    params: T_JSON_DICT = {"scriptId": script_id.to_json()}
     cmd_dict: T_JSON_DICT = {
         "method": "Debugger.disassembleWasmModule",
         "params": params,
@@ -566,8 +557,7 @@ def next_wasm_disassembly_chunk(
     :param stream_id:
     :returns: The next chunk of disassembly.
     """
-    params: T_JSON_DICT = {}
-    params["streamId"] = stream_id
+    params: T_JSON_DICT = {"streamId": stream_id}
     cmd_dict: T_JSON_DICT = {
         "method": "Debugger.nextWasmDisassemblyChunk",
         "params": params,
@@ -585,8 +575,7 @@ def get_wasm_bytecode(
     :param script_id: Id of the Wasm script to get source for.
     :returns: Script source. (Encoded as a base64 string when passed over JSON)
     """
-    params: T_JSON_DICT = {}
-    params["scriptId"] = script_id.to_json()
+    params: T_JSON_DICT = {"scriptId": script_id.to_json()}
     cmd_dict: T_JSON_DICT = {
         "method": "Debugger.getWasmBytecode",
         "params": params,
@@ -606,8 +595,7 @@ def get_stack_trace(
     :param stack_trace_id:
     :returns:
     """
-    params: T_JSON_DICT = {}
-    params["stackTraceId"] = stack_trace_id.to_json()
+    params: T_JSON_DICT = {"stackTraceId": stack_trace_id.to_json()}
     cmd_dict: T_JSON_DICT = {
         "method": "Debugger.getStackTrace",
         "params": params,
@@ -620,10 +608,9 @@ def pause() -> typing.Generator[T_JSON_DICT, T_JSON_DICT, None]:
     """
     Stops on the next JavaScript statement.
     """
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Debugger.pause",
     }
-    yield cmd_dict
 
 
 def pause_on_async_call(
@@ -636,13 +623,11 @@ def pause_on_async_call(
 
     :param parent_stack_trace_id: Debugger will pause when async call with given stack trace is started.
     """
-    params: T_JSON_DICT = {}
-    params["parentStackTraceId"] = parent_stack_trace_id.to_json()
-    cmd_dict: T_JSON_DICT = {
+    params: T_JSON_DICT = {"parentStackTraceId": parent_stack_trace_id.to_json()}
+    yield {
         "method": "Debugger.pauseOnAsyncCall",
         "params": params,
     }
-    yield cmd_dict
 
 
 def remove_breakpoint(
@@ -653,13 +638,11 @@ def remove_breakpoint(
 
     :param breakpoint_id:
     """
-    params: T_JSON_DICT = {}
-    params["breakpointId"] = breakpoint_id.to_json()
-    cmd_dict: T_JSON_DICT = {
+    params: T_JSON_DICT = {"breakpointId": breakpoint_id.to_json()}
+    yield {
         "method": "Debugger.removeBreakpoint",
         "params": params,
     }
-    yield cmd_dict
 
 
 def restart_frame(
@@ -689,8 +672,7 @@ def restart_frame(
         1. **asyncStackTrace** - *(Optional)* Async stack trace, if any.
         2. **asyncStackTraceId** - *(Optional)* Async stack trace, if any.
     """
-    params: T_JSON_DICT = {}
-    params["callFrameId"] = call_frame_id.to_json()
+    params: T_JSON_DICT = {"callFrameId": call_frame_id.to_json()}
     if mode is not None:
         params["mode"] = mode
     cmd_dict: T_JSON_DICT = {
@@ -716,11 +698,10 @@ def resume(
     params: T_JSON_DICT = {}
     if terminate_on_resume is not None:
         params["terminateOnResume"] = terminate_on_resume
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Debugger.resume",
         "params": params,
     }
-    yield cmd_dict
 
 
 def search_in_content(
@@ -738,9 +719,7 @@ def search_in_content(
     :param is_regex: *(Optional)* If true, treats string parameter as regex.
     :returns: List of search matches.
     """
-    params: T_JSON_DICT = {}
-    params["scriptId"] = script_id.to_json()
-    params["query"] = query
+    params: T_JSON_DICT = {"scriptId": script_id.to_json(), "query": query}
     if case_sensitive is not None:
         params["caseSensitive"] = case_sensitive
     if is_regex is not None:
@@ -761,13 +740,11 @@ def set_async_call_stack_depth(
 
     :param max_depth: Maximum depth of async call stacks. Setting to ```0``` will effectively disable collecting async call stacks (default).
     """
-    params: T_JSON_DICT = {}
-    params["maxDepth"] = max_depth
-    cmd_dict: T_JSON_DICT = {
+    params: T_JSON_DICT = {"maxDepth": max_depth}
+    yield {
         "method": "Debugger.setAsyncCallStackDepth",
         "params": params,
     }
-    yield cmd_dict
 
 
 def set_blackbox_patterns(
@@ -782,13 +759,11 @@ def set_blackbox_patterns(
 
     :param patterns: Array of regexps that will be used to check script url for blackbox state.
     """
-    params: T_JSON_DICT = {}
-    params["patterns"] = list(patterns)
-    cmd_dict: T_JSON_DICT = {
+    params: T_JSON_DICT = {"patterns": list(patterns)}
+    yield {
         "method": "Debugger.setBlackboxPatterns",
         "params": params,
     }
-    yield cmd_dict
 
 
 def set_blackboxed_ranges(
@@ -806,14 +781,12 @@ def set_blackboxed_ranges(
     :param script_id: Id of the script.
     :param positions:
     """
-    params: T_JSON_DICT = {}
-    params["scriptId"] = script_id.to_json()
+    params: T_JSON_DICT = {"scriptId": script_id.to_json()}
     params["positions"] = [i.to_json() for i in positions]
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Debugger.setBlackboxedRanges",
         "params": params,
     }
-    yield cmd_dict
 
 
 def set_breakpoint(
@@ -830,8 +803,7 @@ def set_breakpoint(
         0. **breakpointId** - Id of the created breakpoint for further reference.
         1. **actualLocation** - Location this breakpoint resolved into.
     """
-    params: T_JSON_DICT = {}
-    params["location"] = location.to_json()
+    params: T_JSON_DICT = {"location": location.to_json()}
     if condition is not None:
         params["condition"] = condition
     cmd_dict: T_JSON_DICT = {
@@ -854,8 +826,7 @@ def set_instrumentation_breakpoint(
     :param instrumentation: Instrumentation name.
     :returns: Id of the created breakpoint for further reference.
     """
-    params: T_JSON_DICT = {}
-    params["instrumentation"] = instrumentation
+    params: T_JSON_DICT = {"instrumentation": instrumentation}
     cmd_dict: T_JSON_DICT = {
         "method": "Debugger.setInstrumentationBreakpoint",
         "params": params,
@@ -889,8 +860,7 @@ def set_breakpoint_by_url(
         0. **breakpointId** - Id of the created breakpoint for further reference.
         1. **locations** - List of the locations this breakpoint resolved into upon addition.
     """
-    params: T_JSON_DICT = {}
-    params["lineNumber"] = line_number
+    params: T_JSON_DICT = {"lineNumber": line_number}
     if url is not None:
         params["url"] = url
     if url_regex is not None:
@@ -927,8 +897,7 @@ def set_breakpoint_on_function_call(
     :param condition: *(Optional)* Expression to use as a breakpoint condition. When specified, debugger will stop on the breakpoint if this expression evaluates to true.
     :returns: Id of the created breakpoint for further reference.
     """
-    params: T_JSON_DICT = {}
-    params["objectId"] = object_id.to_json()
+    params: T_JSON_DICT = {"objectId": object_id.to_json()}
     if condition is not None:
         params["condition"] = condition
     cmd_dict: T_JSON_DICT = {
@@ -947,13 +916,11 @@ def set_breakpoints_active(
 
     :param active: New value for breakpoints active state.
     """
-    params: T_JSON_DICT = {}
-    params["active"] = active
-    cmd_dict: T_JSON_DICT = {
+    params: T_JSON_DICT = {"active": active}
+    yield {
         "method": "Debugger.setBreakpointsActive",
         "params": params,
     }
-    yield cmd_dict
 
 
 def set_pause_on_exceptions(
@@ -965,13 +932,11 @@ def set_pause_on_exceptions(
 
     :param state: Pause on exceptions mode.
     """
-    params: T_JSON_DICT = {}
-    params["state"] = state
-    cmd_dict: T_JSON_DICT = {
+    params: T_JSON_DICT = {"state": state}
+    yield {
         "method": "Debugger.setPauseOnExceptions",
         "params": params,
     }
-    yield cmd_dict
 
 
 def set_return_value(
@@ -984,13 +949,11 @@ def set_return_value(
 
     :param new_value: New return value.
     """
-    params: T_JSON_DICT = {}
-    params["newValue"] = new_value.to_json()
-    cmd_dict: T_JSON_DICT = {
+    params: T_JSON_DICT = {"newValue": new_value.to_json()}
+    yield {
         "method": "Debugger.setReturnValue",
         "params": params,
     }
-    yield cmd_dict
 
 
 def set_script_source(
@@ -1021,9 +984,10 @@ def set_script_source(
         4. **status** - Whether the operation was successful or not. Only `` Ok`` denotes a successful live edit while the other enum variants denote why the live edit failed.
         5. **exceptionDetails** - *(Optional)* Exception details if any. Only present when `` status`` is `` CompileError`.
     """
-    params: T_JSON_DICT = {}
-    params["scriptId"] = script_id.to_json()
-    params["scriptSource"] = script_source
+    params: T_JSON_DICT = {
+        "scriptId": script_id.to_json(),
+        "scriptSource": script_source,
+    }
     if dry_run is not None:
         params["dryRun"] = dry_run
     if allow_top_frame_editing is not None:
@@ -1051,13 +1015,11 @@ def set_skip_all_pauses(
 
     :param skip: New value for skip pauses state.
     """
-    params: T_JSON_DICT = {}
-    params["skip"] = skip
-    cmd_dict: T_JSON_DICT = {
+    params: T_JSON_DICT = {"skip": skip}
+    yield {
         "method": "Debugger.setSkipAllPauses",
         "params": params,
     }
-    yield cmd_dict
 
 
 def set_variable_value(
@@ -1075,16 +1037,16 @@ def set_variable_value(
     :param new_value: New variable value.
     :param call_frame_id: Id of callframe that holds variable.
     """
-    params: T_JSON_DICT = {}
-    params["scopeNumber"] = scope_number
-    params["variableName"] = variable_name
-    params["newValue"] = new_value.to_json()
+    params: T_JSON_DICT = {
+        "scopeNumber": scope_number,
+        "variableName": variable_name,
+        "newValue": new_value.to_json(),
+    }
     params["callFrameId"] = call_frame_id.to_json()
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Debugger.setVariableValue",
         "params": params,
     }
-    yield cmd_dict
 
 
 def step_into(
@@ -1102,21 +1064,19 @@ def step_into(
         params["breakOnAsyncCall"] = break_on_async_call
     if skip_list is not None:
         params["skipList"] = [i.to_json() for i in skip_list]
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Debugger.stepInto",
         "params": params,
     }
-    yield cmd_dict
 
 
 def step_out() -> typing.Generator[T_JSON_DICT, T_JSON_DICT, None]:
     """
     Steps out of the function call.
     """
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Debugger.stepOut",
     }
-    yield cmd_dict
 
 
 def step_over(
@@ -1130,11 +1090,10 @@ def step_over(
     params: T_JSON_DICT = {}
     if skip_list is not None:
         params["skipList"] = [i.to_json() for i in skip_list]
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Debugger.stepOver",
         "params": params,
     }
-    yield cmd_dict
 
 
 @event_class("Debugger.breakpointResolved")

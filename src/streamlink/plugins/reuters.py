@@ -85,8 +85,7 @@ class Reuters(Plugin):
             pass
 
     def _get_streams(self):
-        hls_url = self._get_data()
-        if hls_url:
+        if hls_url := self._get_data():
             return HLSStream.parse_variant_playlist(self.session, hls_url)
 
 

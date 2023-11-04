@@ -98,11 +98,7 @@ class SegmentedStreamWriter(AwaitableMixin, Thread, Generic[TSegment, TResult]):
             return
 
         future: Optional[TResultFuture]
-        if segment is None:
-            future = None
-        else:
-            future = self.executor.submit(self.fetch, segment)
-
+        future = None if segment is None else self.executor.submit(self.fetch, segment)
         self.queue(segment, future)
 
     def queue(self, segment: Optional[TSegment], future: Optional[TResultFuture], *data) -> None:
@@ -208,8 +204,6 @@ class SegmentedStreamWorker(AwaitableMixin, Thread, Generic[TSegment, TResult]):
         """
 
         return
-        # noinspection PyUnreachableCode
-        yield
 
     def run(self) -> None:
         for segment in self.iter_segments():

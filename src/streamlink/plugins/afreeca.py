@@ -95,8 +95,7 @@ class AfreecaTV(Plugin):
 
     @classmethod
     def stream_weight(cls, key):
-        weight = cls.QUALITY_WEIGHTS.get(key)
-        if weight:
+        if weight := cls.QUALITY_WEIGHTS.get(key):
             return weight, "afreeca"
 
         return Plugin.stream_weight(key)
@@ -216,8 +215,7 @@ class AfreecaTV(Plugin):
             return
 
         for qkey in self.QUALITYS:
-            hls_stream = self._get_hls_stream(broadcast, username, qkey, rmd)
-            if hls_stream:
+            if hls_stream := self._get_hls_stream(broadcast, username, qkey, rmd):
                 yield qkey, hls_stream
 
 

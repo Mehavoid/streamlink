@@ -71,18 +71,13 @@ class Mjunoon(Plugin):
     }
 
     def get_data(self):
-        js_data = {}
         res = self.session.http.get(self.url)
 
         m = self.is_live_channel_re.search(res.text)
         if not m:
             return
 
-        if m.group(1) == "true":
-            js_data["type"] = "channel"
-        else:
-            js_data["type"] = "episode"
-
+        js_data = {"type": "channel" if m.group(1) == "true" else "episode"}
         m = self.main_chunk_js_url_re.search(res.text)
         if not m:
             log.error("Failed to get main chunk JS URL")

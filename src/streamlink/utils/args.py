@@ -52,11 +52,10 @@ def filesize(value):
 
 
 def keyvalue(value):
-    match = _keyvalue_re.match(value)
-    if not match:
+    if match := _keyvalue_re.match(value):
+        return match.group("key", "value")
+    else:
         raise ValueError
-
-    return match.group("key", "value")
 
 
 def num(

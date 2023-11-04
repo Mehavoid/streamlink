@@ -22,7 +22,7 @@ class TestPluginCanHandleUrlRtve(PluginCanHandleUrl):
 
 
 def test_translate_no_content():
-    assert list(ZTNR.translate("")) == []
+    assert not list(ZTNR.translate(""))
 
 
 def test_translate_no_streams():
@@ -40,7 +40,7 @@ def test_translate_no_streams():
         + "NDIxMzY4ODAzNTQ3MjMyMjYzODUwMzY5MTE3MTMwOTMzMjAwNDg1MDExNTE4MTgxMTgwMTAwNjU0"
         + "NTg1MzcxNDQ5MDM5MzY2ODMxNTc0MjUyNDVZsdrfAAAAAElFTkSuQmCC"
     )
-    assert list(ZTNR.translate(data)) == []
+    assert not list(ZTNR.translate(data))
 
 
 def test_translate_has_streams():

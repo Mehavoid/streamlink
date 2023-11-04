@@ -98,8 +98,7 @@ class YuppTV(Plugin):
             log.error("This device requires renewed credentials to log in")
             return
 
-        match = self._m3u8_re.search(page.text)
-        if match:
+        if match := self._m3u8_re.search(page.text):
             stream_url = match.group(1)
             if "preview/" in stream_url:
                 if "btnsignup" in page.text:

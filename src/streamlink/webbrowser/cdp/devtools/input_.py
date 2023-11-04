@@ -52,9 +52,7 @@ class TouchPoint:
     id_: typing.Optional[float] = None
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["x"] = self.x
-        json["y"] = self.y
+        json: T_JSON_DICT = {"x": self.x, "y": self.y}
         if self.radius_x is not None:
             json["radiusX"] = self.radius_x
         if self.radius_y is not None:
@@ -153,9 +151,7 @@ class DragDataItem:
     base_url: typing.Optional[str] = None
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["mimeType"] = self.mime_type
-        json["data"] = self.data
+        json: T_JSON_DICT = {"mimeType": self.mime_type, "data": self.data}
         if self.title is not None:
             json["title"] = self.title
         if self.base_url is not None:
@@ -183,8 +179,7 @@ class DragData:
     files: typing.Optional[typing.List[str]] = None
 
     def to_json(self) -> T_JSON_DICT:
-        json: T_JSON_DICT = {}
-        json["items"] = [i.to_json() for i in self.items]
+        json: T_JSON_DICT = {"items": [i.to_json() for i in self.items]}
         json["dragOperationsMask"] = self.drag_operations_mask
         if self.files is not None:
             json["files"] = list(self.files)
@@ -217,18 +212,13 @@ def dispatch_drag_event(
     :param data:
     :param modifiers: *(Optional)* Bit field representing pressed modifier keys. Alt=1, Ctrl=2, Meta/Command=4, Shift=8 (default: 0).
     """
-    params: T_JSON_DICT = {}
-    params["type"] = type_
-    params["x"] = x
-    params["y"] = y
-    params["data"] = data.to_json()
+    params: T_JSON_DICT = {"type": type_, "x": x, "y": y, "data": data.to_json()}
     if modifiers is not None:
         params["modifiers"] = modifiers
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Input.dispatchDragEvent",
         "params": params,
     }
-    yield cmd_dict
 
 
 def dispatch_key_event(
@@ -267,8 +257,7 @@ def dispatch_key_event(
     :param location: *(Optional)* Whether the event was from the left or right side of the keyboard. 1=Left, 2=Right (default: 0).
     :param commands: **(EXPERIMENTAL)** *(Optional)* Editing commands to send with the key event (e.g., 'selectAll') (default: []). These are related to but not equal the command names used in ````document.execCommand``` and NSStandardKeyBindingResponding. See https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/editing/commands/editor_command_names.h for valid command names.
     """
-    params: T_JSON_DICT = {}
-    params["type"] = type_
+    params: T_JSON_DICT = {"type": type_}
     if modifiers is not None:
         params["modifiers"] = modifiers
     if timestamp is not None:
@@ -297,11 +286,10 @@ def dispatch_key_event(
         params["location"] = location
     if commands is not None:
         params["commands"] = list(commands)
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Input.dispatchKeyEvent",
         "params": params,
     }
-    yield cmd_dict
 
 
 def insert_text(
@@ -315,13 +303,11 @@ def insert_text(
 
     :param text: The text to insert.
     """
-    params: T_JSON_DICT = {}
-    params["text"] = text
-    cmd_dict: T_JSON_DICT = {
+    params: T_JSON_DICT = {"text": text}
+    yield {
         "method": "Input.insertText",
         "params": params,
     }
-    yield cmd_dict
 
 
 def ime_set_composition(
@@ -344,19 +330,19 @@ def ime_set_composition(
     :param replacement_start: *(Optional)* replacement start
     :param replacement_end: *(Optional)* replacement end
     """
-    params: T_JSON_DICT = {}
-    params["text"] = text
-    params["selectionStart"] = selection_start
-    params["selectionEnd"] = selection_end
+    params: T_JSON_DICT = {
+        "text": text,
+        "selectionStart": selection_start,
+        "selectionEnd": selection_end,
+    }
     if replacement_start is not None:
         params["replacementStart"] = replacement_start
     if replacement_end is not None:
         params["replacementEnd"] = replacement_end
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Input.imeSetComposition",
         "params": params,
     }
-    yield cmd_dict
 
 
 def dispatch_mouse_event(
@@ -397,10 +383,7 @@ def dispatch_mouse_event(
     :param delta_y: *(Optional)* Y delta in CSS pixels for mouse wheel event (default: 0).
     :param pointer_type: *(Optional)* Pointer type (default: "mouse").
     """
-    params: T_JSON_DICT = {}
-    params["type"] = type_
-    params["x"] = x
-    params["y"] = y
+    params: T_JSON_DICT = {"type": type_, "x": x, "y": y}
     if modifiers is not None:
         params["modifiers"] = modifiers
     if timestamp is not None:
@@ -427,11 +410,10 @@ def dispatch_mouse_event(
         params["deltaY"] = delta_y
     if pointer_type is not None:
         params["pointerType"] = pointer_type
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Input.dispatchMouseEvent",
         "params": params,
     }
-    yield cmd_dict
 
 
 def dispatch_touch_event(
@@ -448,18 +430,18 @@ def dispatch_touch_event(
     :param modifiers: *(Optional)* Bit field representing pressed modifier keys. Alt=1, Ctrl=2, Meta/Command=4, Shift=8 (default: 0).
     :param timestamp: *(Optional)* Time at which the event occurred.
     """
-    params: T_JSON_DICT = {}
-    params["type"] = type_
-    params["touchPoints"] = [i.to_json() for i in touch_points]
+    params: T_JSON_DICT = {
+        "type": type_,
+        "touchPoints": [i.to_json() for i in touch_points],
+    }
     if modifiers is not None:
         params["modifiers"] = modifiers
     if timestamp is not None:
         params["timestamp"] = timestamp.to_json()
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Input.dispatchTouchEvent",
         "params": params,
     }
-    yield cmd_dict
 
 
 def emulate_touch_from_mouse_event(
@@ -488,11 +470,12 @@ def emulate_touch_from_mouse_event(
     :param modifiers: *(Optional)* Bit field representing pressed modifier keys. Alt=1, Ctrl=2, Meta/Command=4, Shift=8 (default: 0).
     :param click_count: *(Optional)* Number of times the mouse button was clicked (default: 0).
     """
-    params: T_JSON_DICT = {}
-    params["type"] = type_
-    params["x"] = x
-    params["y"] = y
-    params["button"] = button.to_json()
+    params: T_JSON_DICT = {
+        "type": type_,
+        "x": x,
+        "y": y,
+        "button": button.to_json(),
+    }
     if timestamp is not None:
         params["timestamp"] = timestamp.to_json()
     if delta_x is not None:
@@ -503,11 +486,10 @@ def emulate_touch_from_mouse_event(
         params["modifiers"] = modifiers
     if click_count is not None:
         params["clickCount"] = click_count
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Input.emulateTouchFromMouseEvent",
         "params": params,
     }
-    yield cmd_dict
 
 
 def set_ignore_input_events(
@@ -518,13 +500,11 @@ def set_ignore_input_events(
 
     :param ignore: Ignores input events processing when set to true.
     """
-    params: T_JSON_DICT = {}
-    params["ignore"] = ignore
-    cmd_dict: T_JSON_DICT = {
+    params: T_JSON_DICT = {"ignore": ignore}
+    yield {
         "method": "Input.setIgnoreInputEvents",
         "params": params,
     }
-    yield cmd_dict
 
 
 def set_intercept_drags(
@@ -538,13 +518,11 @@ def set_intercept_drags(
 
     :param enabled:
     """
-    params: T_JSON_DICT = {}
-    params["enabled"] = enabled
-    cmd_dict: T_JSON_DICT = {
+    params: T_JSON_DICT = {"enabled": enabled}
+    yield {
         "method": "Input.setInterceptDrags",
         "params": params,
     }
-    yield cmd_dict
 
 
 def synthesize_pinch_gesture(
@@ -565,19 +543,15 @@ def synthesize_pinch_gesture(
     :param relative_speed: *(Optional)* Relative pointer speed in pixels per second (default: 800).
     :param gesture_source_type: *(Optional)* Which type of input events to be generated (default: 'default', which queries the platform for the preferred input type).
     """
-    params: T_JSON_DICT = {}
-    params["x"] = x
-    params["y"] = y
-    params["scaleFactor"] = scale_factor
+    params: T_JSON_DICT = {"x": x, "y": y, "scaleFactor": scale_factor}
     if relative_speed is not None:
         params["relativeSpeed"] = relative_speed
     if gesture_source_type is not None:
         params["gestureSourceType"] = gesture_source_type.to_json()
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Input.synthesizePinchGesture",
         "params": params,
     }
-    yield cmd_dict
 
 
 def synthesize_scroll_gesture(
@@ -612,9 +586,7 @@ def synthesize_scroll_gesture(
     :param repeat_delay_ms: *(Optional)* The number of milliseconds delay between each repeat. (default: 250).
     :param interaction_marker_name: *(Optional)* The name of the interaction markers to generate, if not empty (default: "").
     """
-    params: T_JSON_DICT = {}
-    params["x"] = x
-    params["y"] = y
+    params: T_JSON_DICT = {"x": x, "y": y}
     if x_distance is not None:
         params["xDistance"] = x_distance
     if y_distance is not None:
@@ -635,11 +607,10 @@ def synthesize_scroll_gesture(
         params["repeatDelayMs"] = repeat_delay_ms
     if interaction_marker_name is not None:
         params["interactionMarkerName"] = interaction_marker_name
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Input.synthesizeScrollGesture",
         "params": params,
     }
-    yield cmd_dict
 
 
 def synthesize_tap_gesture(
@@ -660,20 +631,17 @@ def synthesize_tap_gesture(
     :param tap_count: *(Optional)* Number of times to perform the tap (e.g. 2 for double tap, default: 1).
     :param gesture_source_type: *(Optional)* Which type of input events to be generated (default: 'default', which queries the platform for the preferred input type).
     """
-    params: T_JSON_DICT = {}
-    params["x"] = x
-    params["y"] = y
+    params: T_JSON_DICT = {"x": x, "y": y}
     if duration is not None:
         params["duration"] = duration
     if tap_count is not None:
         params["tapCount"] = tap_count
     if gesture_source_type is not None:
         params["gestureSourceType"] = gesture_source_type.to_json()
-    cmd_dict: T_JSON_DICT = {
+    yield {
         "method": "Input.synthesizeTapGesture",
         "params": params,
     }
-    yield cmd_dict
 
 
 @event_class("Input.dragIntercepted")

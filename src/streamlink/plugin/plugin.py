@@ -83,9 +83,9 @@ def stream_weight(stream):
         if stream in weights:
             return weights[stream], group
 
-    match = re.match(r"^(\d+)(k|p)?(\d+)?(\+)?(?:[a_](\d+)k)?(?:_(alt)(\d)?)?$", stream)
-
-    if match:
+    if match := re.match(
+        r"^(\d+)(k|p)?(\d+)?(\+)?(?:[a_](\d+)k)?(?:_(alt)(\d)?)?$", stream
+    ):
         weight = 0
 
         if match.group(6):
@@ -154,10 +154,7 @@ def stream_sorting_filter(expr, stream_weight):
     def func(quality):
         weight, group = stream_weight(quality)
 
-        if group == filter_group:
-            return not op(weight, filter_weight)
-
-        return True
+        return not op(weight, filter_weight) if group == filter_group else True
 
     return func
 
@@ -574,8 +571,7 @@ class Plugin:
         return removed
 
     def input_ask(self, prompt: str) -> str:
-        user_input_requester: Optional[UserInputRequester] = self.session.get_option("user-input-requester")
-        if user_input_requester:
+        if user_input_requester := self.session.get_option("user-input-requester"):
             try:
                 return user_input_requester.ask(prompt)
             except OSError as err:
@@ -583,8 +579,7 @@ class Plugin:
         raise FatalPluginError("This plugin requires user input, however it is not supported on this platform")
 
     def input_ask_password(self, prompt: str) -> str:
-        user_input_requester: Optional[UserInputRequester] = self.session.get_option("user-input-requester")
-        if user_input_requester:
+        if user_input_requester := self.session.get_option("user-input-requester"):
             try:
                 return user_input_requester.ask_password(prompt)
             except OSError as err:

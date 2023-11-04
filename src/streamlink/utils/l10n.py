@@ -64,21 +64,21 @@ class Language:
     @classmethod
     def get(cls, language):
         try:
-            lang = (
+            if lang := (
                 languages.get(alpha_2=language)
                 or languages.get(alpha_3=language)
                 or languages.get(bibliographic=language)
                 or languages.get(name=language)
-            )
-            if not lang:
+            ):
+                return Language(
+                    # some languages don't have an alpha_2 code
+                    getattr(lang, "alpha_2", ""),
+                    lang.alpha_3,
+                    lang.name,
+                    getattr(lang, "bibliographic", ""),
+                )
+            else:
                 raise KeyError(language)
-            return Language(
-                # some languages don't have an alpha_2 code
-                getattr(lang, "alpha_2", ""),
-                lang.alpha_3,
-                lang.name,
-                getattr(lang, "bibliographic", ""),
-            )
         except LookupError as err:
             raise LookupError(f"Invalid language code: {language}") from err
 
